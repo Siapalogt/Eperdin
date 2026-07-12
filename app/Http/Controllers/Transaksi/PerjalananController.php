@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Transaksi;
 
+use App\Models\Master\Asn;
+use App\Models\Master\AnggotaDewan;
+use App\Models\Master\Pjlp;
 use App\Http\Controllers\Controller;
 use App\Models\Transaksi\Perjalanan;
 use App\Models\Master\TemplatePerjalanan;
@@ -67,4 +70,22 @@ class PerjalananController extends Controller
         // 4. Redirect kembali ke halaman index dengan pesan sukses
         return redirect()->route('perjalanan.index')->with('success', 'Data perjalanan dinas berhasil dibuat sebagai Draft!');
     }
+
+    public function show($id)
+{
+    // 1. Ambil data perjalanan ini beserta peserta yang sudah terdaftar didalamnya
+    $perjalanan = Perjalanan::with(['peserta.detail_peserta'])->findOrFail($id);
+
+    // 2. Ambil semua data master personel untuk pilihan dropdown tambah peserta nanti
+    $masterAsn = Asn::where('status', 'Aktif')->get();
+    $masterDewan = AnggotaDewan::where('status', 'Aktif')->get();
+    $masterPjlp = Pjlp::where('status', 'Aktif')->get();
+
+    return Inertia::render('Transaksi/Perjalanan/Show', [
+        'perjalanan' => $perjalanan,
+        'masterAsn' => $masterAsn,
+        'masterDewan' => $masterDewan,
+        'masterPjlp' => $masterPjlp
+    ]);
+}
 }

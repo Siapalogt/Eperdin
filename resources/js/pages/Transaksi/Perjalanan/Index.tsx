@@ -56,8 +56,11 @@ const Index: React.FC<Props> = ({ listPerjalanan }) => {
                         ) : (
                             listPerjalanan.map((row) => (
                                 <tr key={row.id} className="hover:bg-gray-50 transition">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
-                                        {row.nomor}
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        {/* Mengubah nomor menjadi link yang bisa diklik */}
+                                        <Link href={route('perjalanan.show', row.id)} className="text-blue-600 hover:text-blue-900 hover:underline">
+                                            {row.nomor}
+                                        </Link>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         <div className="font-semibold text-gray-800">{row.nama_kegiatan}</div>
