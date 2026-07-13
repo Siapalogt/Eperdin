@@ -51,6 +51,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('dewan', AnggotaDewanController::class);
         Route::resource('pjlp', PjlpController::class);
         Route::resource('template', TemplatePerjalananController::class);
+        Route::resource('kelompok-biaya', \App\Http\Controllers\Master\KelompokBiayaController::class)->only(['index', 'store', 'update']);
+        Route::resource('komponen-biaya', \App\Http\Controllers\Master\KomponenBiayaController::class)->only(['index', 'store', 'update']);
     });
 
     // 4. Rute Transaksi Perjalanan

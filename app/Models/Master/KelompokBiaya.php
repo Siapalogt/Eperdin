@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class KelompokBiaya extends Model
 {
     protected $table = 'm_kelompok_biaya';
+    protected $fillable = ['nama'];
 
     // Satu kelompok biaya (misal: Transportasi) punya banyak komponen (Pesawat, Kereta, Tol)
     public function komponen_biaya(): HasMany
