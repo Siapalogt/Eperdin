@@ -6,6 +6,9 @@ interface DashboardStats {
     totalAsn: number;
     totalDewan: number;
     totalPjlp: number;
+    totalTA: number;
+    totalKelompok: number;
+    totalKomponen: number;
     totalPerjalanan: number;
     activePerjalanan: number;
     completedPerjalanan: number;
@@ -40,7 +43,7 @@ const Dashboard: React.FC<Props> = ({ stats }) => {
                 </div>
                 <div className="bg-white rounded-xl border border-slate-200 p-5">
                     <p className="text-xs text-slate-400 font-medium">Total Personel</p>
-                    <p className="text-3xl font-black text-slate-800 mt-1">{stats.totalAsn + stats.totalDewan + stats.totalPjlp}</p>
+                    <p className="text-3xl font-black text-slate-800 mt-1">{stats.totalAsn + stats.totalDewan + stats.totalPjlp + stats.totalTA}</p>
                 </div>
             </div>
 
@@ -48,39 +51,87 @@ const Dashboard: React.FC<Props> = ({ stats }) => {
             <div className="mb-10">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Master Data</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <Link href={route('master.asn.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group">
-                        <div className="flex items-center justify-between mb-3">
-                            <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Pegawai ASN</p>
-                            <span className="text-xs font-bold text-slate-400">{stats.totalAsn}</span>
+                    {/* ASN */}
+                    <Link href={route('master.asn.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Pegawai ASN</p>
+                                <span className="text-xs font-bold text-slate-400">{stats.totalAsn}</span>
+                            </div>
+                            <p className="text-xs text-slate-400 leading-relaxed">Data kepegawaian ASN Sekretariat DPRD.</p>
                         </div>
-                        <p className="text-xs text-slate-400 leading-relaxed">Data kepegawaian ASN Sekretariat DPRD.</p>
                         <p className="text-xs font-bold text-indigo-500 mt-4 group-hover:translate-x-0.5 transition">Buka &rarr;</p>
                     </Link>
 
-                    <Link href={route('master.dewan.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group">
-                        <div className="flex items-center justify-between mb-3">
-                            <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Anggota Dewan</p>
-                            <span className="text-xs font-bold text-slate-400">{stats.totalDewan}</span>
+                    {/* DEWAN */}
+                    <Link href={route('master.dewan.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Anggota Dewan</p>
+                                <span className="text-xs font-bold text-slate-400">{stats.totalDewan}</span>
+                            </div>
+                            <p className="text-xs text-slate-400 leading-relaxed">Biodata Anggota DPRD Provinsi DKI Jakarta.</p>
                         </div>
-                        <p className="text-xs text-slate-400 leading-relaxed">Biodata Anggota DPRD Provinsi DKI Jakarta.</p>
                         <p className="text-xs font-bold text-indigo-500 mt-4 group-hover:translate-x-0.5 transition">Buka &rarr;</p>
                     </Link>
 
-                    <Link href={route('master.pjlp.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group">
-                        <div className="flex items-center justify-between mb-3">
-                            <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Pegawai PJLP</p>
-                            <span className="text-xs font-bold text-slate-400">{stats.totalPjlp}</span>
+                    {/* PJLP */}
+                    <Link href={route('master.pjlp.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Pegawai PJLP</p>
+                                <span className="text-xs font-bold text-slate-400">{stats.totalPjlp}</span>
+                            </div>
+                            <p className="text-xs text-slate-400 leading-relaxed">Data tenaga operasional PJLP Sekretariat DPRD.</p>
                         </div>
-                        <p className="text-xs text-slate-400 leading-relaxed">Data tenaga PJLP Sekretariat DPRD.</p>
                         <p className="text-xs font-bold text-indigo-500 mt-4 group-hover:translate-x-0.5 transition">Buka &rarr;</p>
                     </Link>
 
-                    <Link href={route('master.template.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group">
-                        <div className="flex items-center justify-between mb-3">
-                            <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Template Dinas</p>
-                            <span className="text-xs font-bold text-slate-400">Paket</span>
+                    {/* TENAGA AHLI */}
+                    <Link href={route('master.tenaga-ahli.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Tenaga Ahli</p>
+                                <span className="text-xs font-bold text-slate-400">{stats.totalTA}</span>
+                            </div>
+                            <p className="text-xs text-slate-400 leading-relaxed">Data pakar/staf ahli pendamping Anggota Dewan.</p>
                         </div>
-                        <p className="text-xs text-slate-400 leading-relaxed">Template perjalanan dinas dan standar komponen biaya.</p>
+                        <p className="text-xs font-bold text-indigo-500 mt-4 group-hover:translate-x-0.5 transition">Buka &rarr;</p>
+                    </Link>
+
+                    {/* KELOMPOK BIAYA */}
+                    <Link href={route('master.kelompok-biaya.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Kelompok Biaya</p>
+                                <span className="text-xs font-bold text-slate-400">{stats.totalKelompok}</span>
+                            </div>
+                            <p className="text-xs text-slate-400 leading-relaxed">Kategori induk pengelompokan anggaran dinas.</p>
+                        </div>
+                        <p className="text-xs font-bold text-indigo-500 mt-4 group-hover:translate-x-0.5 transition">Buka &rarr;</p>
+                    </Link>
+
+                    {/* KOMPONEN BIAYA */}
+                    <Link href={route('master.komponen-biaya.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Komponen Biaya</p>
+                                <span className="text-xs font-bold text-slate-400">{stats.totalKomponen}</span>
+                            </div>
+                            <p className="text-xs text-slate-400 leading-relaxed">Rincian spesifik dari item-item pembiayaan.</p>
+                        </div>
+                        <p className="text-xs font-bold text-indigo-500 mt-4 group-hover:translate-x-0.5 transition">Buka &rarr;</p>
+                    </Link>
+
+                    {/* TEMPLATE */}
+                    <Link href={route('master.template.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between lg:col-span-2">
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Template Dokumen Dinas</p>
+                                <span className="text-xs font-bold text-slate-400">Paket Form</span>
+                            </div>
+                            <p className="text-xs text-slate-400 leading-relaxed">Template standar dan aturan penyusunan form untuk surat perjalanan dinas otomatis.</p>
+                        </div>
                         <p className="text-xs font-bold text-indigo-500 mt-4 group-hover:translate-x-0.5 transition">Buka &rarr;</p>
                     </Link>
                 </div>
@@ -90,7 +141,7 @@ const Dashboard: React.FC<Props> = ({ stats }) => {
             <div className="mb-10">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Transaksi Perjalanan</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Link href={route('perjalanan.create')} className="bg-indigo-900 text-white rounded-xl p-6 hover:bg-indigo-800 transition group flex justify-between items-center">
+                    <Link href={route('perjalanan.create')} className="bg-indigo-900 text-white rounded-xl p-6 hover:bg-indigo-800 transition group flex justify-between items-center shadow-lg shadow-indigo-900/20">
                         <div>
                             <p className="text-sm font-bold">Buat Perjalanan Baru</p>
                             <p className="text-xs text-indigo-300 mt-1">Inisiasi surat perintah tugas baru (status: Draft).</p>

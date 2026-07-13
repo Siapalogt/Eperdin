@@ -7,7 +7,8 @@ use App\Http\Controllers\Master\AsnController;
 use App\Http\Controllers\Master\AnggotaDewanController;
 use App\Http\Controllers\Master\PjlpController;
 use App\Http\Controllers\Master\TemplatePerjalananController;
-use App\Http\Controllers\Auth\LoginController; // 💡 Tambahkan Import ini
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Master\TenagaAhliController; 
 use Inertia\Inertia;
 
 // ==========================================
@@ -32,17 +33,21 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
     // 2. Dashboard Utama
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard', [
-            'stats' => [
-                'totalAsn' => \App\Models\Master\Asn::count(),
-                'totalDewan' => \App\Models\Master\AnggotaDewan::count(),
-                'totalPjlp' => \App\Models\Master\Pjlp::count(),
-                'totalPerjalanan' => \App\Models\Transaksi\Perjalanan::count(),
-                'activePerjalanan' => \App\Models\Transaksi\Perjalanan::whereIn('status', ['Draft', 'Diproses'])->count(),
-                'completedPerjalanan' => \App\Models\Transaksi\Perjalanan::where('status', 'Selesai')->count(),
-            ]
-        ]);
+// 2. Dashboard Utama (Peta Alur Sistem)
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard', [
+        'stats' => [
+            'totalAsn' => \App\Models\Master\Asn::count(),
+            'totalDewan' => \App\Models\Master\AnggotaDewan::count(),
+            'totalPjlp' => \App\Models\Master\Pjlp::count(),
+            'totalTA' => \App\Models\Master\TenagaAhli::count(),               // 💡 Tambahan baru
+            'totalKelompok' => \App\Models\Master\KelompokBiaya::count(),      // 💡 Tambahan baru
+            'totalKomponen' => \App\Models\Master\KomponenBiaya::count(),      // 💡 Tambahan baru
+            'totalPerjalanan' => \App\Models\Transaksi\Perjalanan::count(),
+            'activePerjalanan' => \App\Models\Transaksi\Perjalanan::whereIn('status', ['Draft', 'Diproses'])->count(),
+            'completedPerjalanan' => \App\Models\Transaksi\Perjalanan::where('status', 'Selesai')->count(),
+        ]
+    ]);
     })->name('dashboard');
 
     // 3. Rute Master Data
@@ -53,6 +58,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('template', TemplatePerjalananController::class);
         Route::resource('kelompok-biaya', \App\Http\Controllers\Master\KelompokBiayaController::class)->only(['index', 'store', 'update']);
         Route::resource('komponen-biaya', \App\Http\Controllers\Master\KomponenBiayaController::class)->only(['index', 'store', 'update']);
+        Route::resource('tenaga-ahli', TenagaAhliController::class)->only(['index', 'store', 'update']);
     });
 
     // 4. Rute Transaksi Perjalanan
