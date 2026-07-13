@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domains\Perjalanan\Actions;
+namespace App\Domains\Perjalanan\Action;
 
 use App\Models\Transaksi\Perjalanan;
 use Illuminate\Support\Facades\Auth;
