@@ -144,7 +144,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                 <div className="p-4 border-t border-indigo-900/50 bg-indigo-950/40 text-center text-[10px] text-indigo-300/50">
                     &copy; 2026 DPRD DKI Jakarta
                 </div>
-            </aside>
+            </aside>    
 
             {/* Mobile Header */}
             <header className="md:hidden flex items-center justify-between px-6 py-4 bg-indigo-950 text-white shadow-md">
@@ -220,6 +220,21 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                     ))}
                                 </ul>
                             </div>
+                            <div className="p-4 border-t border-indigo-900/50 mt-auto">
+                            <Link 
+                                href="/logout" 
+                                method="post" 
+                                as="button" 
+                                className="w-full flex items-center justify-center space-x-2 bg-rose-500/20 text-rose-300 hover:bg-rose-500 hover:text-white py-3 rounded-lg text-sm font-bold transition shadow-sm"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                <span>Keluar Sistem</span>
+                            </Link>
+
+                            
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -234,15 +249,31 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                         <span className="text-xs text-slate-400">Sekretariat DPRD Provinsi DKI Jakarta</span>
                     </div>
                     {/* User Profile Info */}
-                    <div className="flex items-center space-x-4">
-                        <div className="text-right">
-                            <span className="block text-xs font-bold text-slate-700">Administrator e-Perdin</span>
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-blue-100 text-blue-800 border border-blue-200 uppercase tracking-wider">Super Admin</span>
-                        </div>
-                        <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden font-black text-slate-600 shadow-inner">
-                            AD
-                        </div>
+                    {/* User Profile Info */}
+                <div className="flex items-center space-x-4">
+                    <div className="text-right">
+                        <span className="block text-xs font-bold text-slate-700">Administrator e-Perdin</span>
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-blue-100 text-blue-800 border border-blue-200 uppercase tracking-wider">Super Admin</span>
                     </div>
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden font-black text-slate-600 shadow-inner">
+                        AD
+                    </div>
+                    
+                    {/* 💡 TOMBOL LOGOUT DESKTOP BARU */}
+                    <div className="border-l border-slate-200 pl-4">
+                        <Link 
+                            href="/logout" 
+                            method="post" 
+                            as="button" 
+                            className="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white rounded-xl transition border border-rose-100 shadow-sm"
+                            title="Keluar (Logout)"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                        </Link>
+                    </div>
+                </div>
                 </header>
 
                 {/* Content */}
