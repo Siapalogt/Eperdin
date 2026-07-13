@@ -9,6 +9,8 @@ class AnggotaDewan extends Model
 {
     protected $table = 'm_anggota_dewan';
 
+    protected $guarded = [];
+
     // Satu Anggota Dewan bisa dibantu oleh beberapa Tenaga Ahli
     public function tenaga_ahli(): HasMany
     {

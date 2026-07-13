@@ -44,4 +44,16 @@ class AsnController extends Controller
         return redirect()->route('master.asn.index')
             ->with('success', 'Data ASN berhasil diperbarui!');
     }
+
+    /**
+     * Menghapus data master ASN
+     */
+    public function destroy($id)
+    {
+        $asn = Asn::findOrFail($id);
+        $asn->delete();
+
+        return redirect()->route('master.asn.index')
+            ->with('success', 'Data ASN berhasil dihapus!');
+    }
 }

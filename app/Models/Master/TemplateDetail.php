@@ -9,6 +9,8 @@ class TemplateDetail extends Model
 {
     protected $table = 'm_template_detail';
 
+    protected $guarded = [];
+
     // Mengetahui detail ini milik template yang mana
     public function template_perjalanan(): BelongsTo
     {

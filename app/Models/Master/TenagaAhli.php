@@ -9,6 +9,8 @@ class TenagaAhli extends Model
 {
     protected $table = 'm_tenaga_ahli';
 
+    protected $guarded = [];
+
     // Mengetahui Tenaga Ahli ini mendampingi Anggota Dewan yang mana
     public function anggota_dewan(): BelongsTo
     {

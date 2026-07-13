@@ -23,4 +23,16 @@ class PesertaController extends Controller
         return redirect()->route('perjalanan.show', $perjalananId)
             ->with('success', 'Peserta berhasil ditambahkan ke perjalanan dinas!');
     }
+
+    /**
+     * Menghapus peserta dari perjalanan dinas
+     */
+    public function destroy($perjalananId, $pesertaId)
+    {
+        $peserta = \App\Models\Transaksi\Peserta::where('perjalanan_id', $perjalananId)->findOrFail($pesertaId);
+        $peserta->delete();
+
+        return redirect()->route('perjalanan.show', $perjalananId)
+            ->with('success', 'Peserta berhasil dihapus dari perjalanan dinas!');
+    }
 }

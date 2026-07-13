@@ -10,6 +10,8 @@ class BiayaBersama extends Model
 {
     protected $table = 't_biaya_bersama';
 
+    protected $guarded = [];
+
     // 1. Relasi balik ke Perjalanan induknya
     public function perjalanan(): BelongsTo
     {

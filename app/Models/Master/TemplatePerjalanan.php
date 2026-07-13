@@ -9,6 +9,8 @@ class TemplatePerjalanan extends Model
 {
     protected $table = 'm_template_perjalanan';
 
+    protected $guarded = [];
+
     // Satu template memiliki banyak rincian komponen biaya default
     public function detail_template(): HasMany
     {

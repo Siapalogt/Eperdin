@@ -10,6 +10,8 @@ class BiayaPeserta extends Model
 {
     protected $table = 't_biaya_peserta';
 
+    protected $guarded = [];
+
     // 1. Relasi balik ke Peserta (Biaya ini milik siapa)
     public function peserta(): BelongsTo
     {

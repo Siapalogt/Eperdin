@@ -10,6 +10,8 @@ class Pjlp extends Model
 {
     protected $table = 'm_pjlp';
 
+    protected $guarded = [];
+
     // Relasi balik polimorfik untuk melihat riwayat perjalanan PJLP ini
     public function perjalanan_dinas(): MorphMany
     {

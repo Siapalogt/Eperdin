@@ -12,6 +12,8 @@ class Peserta extends Model
     // Mengunci nama tabel kustom
     protected $table = 't_peserta'; 
 
+    protected $guarded = []; 
+
     // 1. Relasi Polimorfik ke m_asn, m_anggota_dewan, m_tenaga_ahli, m_pjlp
     // Fungsi ini akan otomatis membaca kolom 'jenis_peserta' dan 'peserta_id'
     public function detail_peserta(): MorphTo
