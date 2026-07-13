@@ -45,30 +45,17 @@ class PerjalananController extends Controller
     /**
      * Menyimpan data perjalanan dinas baru (Status awal: Draft)
      */
-    public function store(Request $request)
+    public function store(StorePerjalananRequest $request, CreatePerjalananDraftAction $action)
     {
-        // 1. Validasi Input Form
-        $validated = $request->validate([
-            'nomor' => 'required|unique:t_perjalanan,nomor',
-            'template_perjalanan_id' => 'required|exists:m_template_perjalanan,id',
-            'nama_kegiatan' => 'required|string|max:255',
-            'tujuan' => 'required|string|max:150',
-            'lokasi' => 'nullable|string|max:255',
-            'tanggal_berangkat' => 'required|date',
-            'tanggal_pulang' => 'required|date|after_or_equal:tanggal_berangkat',
-            'lama_hari' => 'required|integer|min:1',
-            'keterangan' => 'nullable|string',
-        ]);
+        // 1. Ambil data yang sudah lolos validasi dari Form Request
+        $validatedData = $request->validated();
 
-        // 2. Set otomatis status menjadi Draft dan catat pembuatnya
-        $validated['status'] = 'Draft';
-        $validated['created_by'] = Auth::id(); // Mengambil ID admin yang sedang login
+        // 2. Delegasikan tugas eksekusi logika bisnis ke lapisan Action
+        $action->execute($validatedData);
 
-        // 3. Simpan ke tabel t_perjalanan
-        Perjalanan::create($validated);
-
-        // 4. Redirect kembali ke halaman index dengan pesan sukses
-        return redirect()->route('perjalanan.index')->with('success', 'Data perjalanan dinas berhasil dibuat sebagai Draft!');
+        // 3. Kembalikan respon HTTP / Inertia redirect
+        return redirect()->route('perjalanan.index')
+            ->with('success', 'Data perjalanan dinas berhasil dibuat sebagai Draft!');
     }
 
     public function show($id)
