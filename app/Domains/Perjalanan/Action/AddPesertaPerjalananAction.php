@@ -19,6 +19,7 @@ class AddPesertaPerjalananAction
             'Dewan' => \App\Models\Master\AnggotaDewan::class,
             'Asn'   => \App\Models\Master\Asn::class,
             'Pjlp'  => \App\Models\Master\Pjlp::class,
+            'Ta'    => \App\Models\Master\TenagaAhli::class,
         ];
 
         $peserta = new Peserta();

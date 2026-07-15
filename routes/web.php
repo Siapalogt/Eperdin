@@ -9,6 +9,7 @@ use App\Http\Controllers\Master\PjlpController;
 use App\Http\Controllers\Master\TemplatePerjalananController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Master\TenagaAhliController; 
+use App\Http\Controllers\Transaksi\BiayaPesertaController;
 use Inertia\Inertia;
 
 // ==========================================
@@ -66,4 +67,10 @@ Route::get('/dashboard', function () {
     Route::post('perjalanan/{perjalanan}/status', [PerjalananController::class, 'updateStatus'])->name('perjalanan.status');
     Route::post('perjalanan/{perjalanan}/peserta', [PesertaController::class, 'store'])->name('perjalanan.peserta.store');
     Route::delete('perjalanan/{perjalanan}/peserta/{peserta}', [PesertaController::class, 'destroy'])->name('perjalanan.peserta.destroy');
+    Route::post('perjalanan/{perjalanan}/peserta', [PesertaController::class, 'store'])->name('perjalanan.peserta.store');
+    Route::delete('perjalanan/{perjalanan}/peserta/{peserta}', [PesertaController::class, 'destroy'])->name('perjalanan.peserta.destroy');
+
+    //5. Rute Biaya
+    Route::post('peserta/{peserta}/biaya', [BiayaPesertaController::class, 'store'])->name('peserta.biaya.store');
 });
+

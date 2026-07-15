@@ -32,4 +32,9 @@ class Peserta extends Model
     {
         return $this->hasMany(BiayaPeserta::class, 'peserta_id');
     }
+    // Relasi untuk menarik rincian biaya milik peserta ini
+    public function rincian_biaya()
+    {
+        return $this->hasMany(BiayaPeserta::class, 'peserta_id')->with('komponen_biaya');
+    }
 }
