@@ -56,6 +56,21 @@ class TemplatePerjalananController extends Controller
             ->with('success', 'Template Perjalanan berhasil diperbarui!');
     }
 
+    // Tambahkan ini di bawah method store() atau update()
+    public function show($id)
+    {
+        $template = \App\Models\Master\TemplatePerjalanan::with([
+            'details.kelompok_biaya', 
+            'details.komponen_biaya'
+        ])->findOrFail($id);
+
+        return \Inertia\Inertia::render('Master/Template/Show', [
+            'template' => $template,
+            'listKelompok' => \App\Models\Master\KelompokBiaya::orderBy('nama')->get(),
+            'listKomponen' => \App\Models\Master\KomponenBiaya::orderBy('nama')->get(),
+        ]);
+    }
+
     /**
      * Menghapus data master Template Perjalanan
      */
@@ -67,4 +82,6 @@ class TemplatePerjalananController extends Controller
         return redirect()->route('master.template.index')
             ->with('success', 'Template Perjalanan berhasil dihapus!');
     }
+
+    
 }

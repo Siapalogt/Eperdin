@@ -52,7 +52,7 @@ const Dashboard: React.FC<Props> = ({ stats }) => {
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Master Data</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* ASN */}
-                    <Link href={route('master.asn.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
+                    <Link href="/master/asn" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
                         <div>
                             <div className="flex items-center justify-between mb-3">
                                 <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Pegawai ASN</p>
@@ -64,7 +64,7 @@ const Dashboard: React.FC<Props> = ({ stats }) => {
                     </Link>
 
                     {/* DEWAN */}
-                    <Link href={route('master.dewan.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
+                    <Link href="/master/dewan" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
                         <div>
                             <div className="flex items-center justify-between mb-3">
                                 <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Anggota Dewan</p>
@@ -76,7 +76,7 @@ const Dashboard: React.FC<Props> = ({ stats }) => {
                     </Link>
 
                     {/* PJLP */}
-                    <Link href={route('master.pjlp.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
+                    <Link href="/master/pjlp" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
                         <div>
                             <div className="flex items-center justify-between mb-3">
                                 <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Pegawai PJLP</p>
@@ -88,7 +88,7 @@ const Dashboard: React.FC<Props> = ({ stats }) => {
                     </Link>
 
                     {/* TENAGA AHLI */}
-                    <Link href={route('master.tenaga-ahli.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
+                    <Link href="/master/tenaga-ahli" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
                         <div>
                             <div className="flex items-center justify-between mb-3">
                                 <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Tenaga Ahli</p>
@@ -100,7 +100,7 @@ const Dashboard: React.FC<Props> = ({ stats }) => {
                     </Link>
 
                     {/* KELOMPOK BIAYA */}
-                    <Link href={route('master.kelompok-biaya.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
+                    <Link href="/master/kelompok-biaya" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
                         <div>
                             <div className="flex items-center justify-between mb-3">
                                 <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Kelompok Biaya</p>
@@ -112,7 +112,7 @@ const Dashboard: React.FC<Props> = ({ stats }) => {
                     </Link>
 
                     {/* KOMPONEN BIAYA */}
-                    <Link href={route('master.komponen-biaya.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
+                    <Link href="/master/komponen-biaya" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between">
                         <div>
                             <div className="flex items-center justify-between mb-3">
                                 <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Komponen Biaya</p>
@@ -124,7 +124,7 @@ const Dashboard: React.FC<Props> = ({ stats }) => {
                     </Link>
 
                     {/* TEMPLATE */}
-                    <Link href={route('master.template.index')} className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between lg:col-span-2">
+                    <Link href="/master/template" className="bg-white rounded-xl border border-slate-200 p-5 hover:border-indigo-400 hover:shadow-sm transition group flex flex-col justify-between lg:col-span-2">
                         <div>
                             <div className="flex items-center justify-between mb-3">
                                 <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Template Dokumen Dinas</p>
@@ -141,7 +141,7 @@ const Dashboard: React.FC<Props> = ({ stats }) => {
             <div className="mb-10">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Transaksi Perjalanan</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Link href={route('perjalanan.create')} className="bg-indigo-900 text-white rounded-xl p-6 hover:bg-indigo-800 transition group flex justify-between items-center shadow-lg shadow-indigo-900/20">
+                    <Link href="/perjalanan/create" className="bg-indigo-900 text-white rounded-xl p-6 hover:bg-indigo-800 transition group flex justify-between items-center shadow-lg shadow-indigo-900/20">
                         <div>
                             <p className="text-sm font-bold">Buat Perjalanan Baru</p>
                             <p className="text-xs text-indigo-300 mt-1">Inisiasi surat perintah tugas baru (status: Draft).</p>
@@ -149,7 +149,7 @@ const Dashboard: React.FC<Props> = ({ stats }) => {
                         <span className="text-indigo-300 group-hover:text-white group-hover:translate-x-1 transition text-lg">&rarr;</span>
                     </Link>
 
-                    <Link href={route('perjalanan.index')} className="bg-white border border-slate-200 rounded-xl p-6 hover:border-indigo-400 hover:shadow-sm transition group flex justify-between items-center">
+                    <Link href="/perjalanan" className="bg-white border border-slate-200 rounded-xl p-6 hover:border-indigo-400 hover:shadow-sm transition group flex justify-between items-center">
                         <div>
                             <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition">Daftar Perjalanan</p>
                             <p className="text-xs text-slate-400 mt-1">Kelola usulan, manifes peserta, dan status perjalanan dinas.</p>

@@ -16,4 +16,10 @@ class TemplatePerjalanan extends Model
     {
         return $this->hasMany(TemplateDetail::class, 'template_perjalanan_id');
     }
+
+    // Tambahkan di dalam class TemplatePerjalanan
+    public function details()
+    {
+        return $this->hasMany(TemplateDetail::class, 'template_perjalanan_id');
+    }
 }

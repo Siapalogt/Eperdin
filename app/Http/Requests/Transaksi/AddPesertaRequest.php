@@ -16,7 +16,6 @@ class AddPesertaRequest extends FormRequest
         return [
             'jenis_peserta' => 'required|string|in:Dewan,Asn,Pjlp,Ta',
             'peserta_id' => 'required|integer',
-            'uang_harian_kustom' => 'nullable|numeric|min:0',
         ];
     }
 }

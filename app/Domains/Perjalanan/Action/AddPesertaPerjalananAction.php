@@ -2,6 +2,10 @@
 
 namespace App\Domains\Perjalanan\Action;
 
+use App\Models\Master\AnggotaDewan;
+use App\Models\Master\Asn;
+use App\Models\Master\Pjlp;
+use App\Models\Master\TenagaAhli;
 use App\Models\Transaksi\Perjalanan;
 use App\Models\Transaksi\Peserta;
 
@@ -16,17 +20,16 @@ class AddPesertaPerjalananAction
 
         // Mapping string dari form ke Class Model Eloquent
         $mapping = [
-            'Dewan' => \App\Models\Master\AnggotaDewan::class,
-            'Asn'   => \App\Models\Master\Asn::class,
-            'Pjlp'  => \App\Models\Master\Pjlp::class,
-            'Ta'    => \App\Models\Master\TenagaAhli::class,
+            'Dewan' => AnggotaDewan::class,
+            'Asn' => Asn::class,
+            'Pjlp' => Pjlp::class,
+            'Ta' => TenagaAhli::class,
         ];
 
-        $peserta = new Peserta();
+        $peserta = new Peserta;
         $peserta->perjalanan_id = $perjalanan->id;
         $peserta->jenis_peserta = $mapping[$data['jenis_peserta']];
         $peserta->peserta_id = $data['peserta_id'];
-        $peserta->uang_harian_kustom = $data['uang_harian_kustom'] ?? 0;
         $peserta->save();
 
         return $peserta;
