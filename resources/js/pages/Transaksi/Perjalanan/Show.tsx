@@ -32,6 +32,7 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
     const { data: formPeserta, setData: setFormPeserta, post: postPeserta, processing: procPeserta, reset: resetPeserta, errors: errPeserta } = useForm({
         jenis_peserta: 'Asn',
         peserta_id: '',
+        uang_harian_kustom: 0,
     });
 
     useEffect(() => {
@@ -75,7 +76,8 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
 
     const { data: formBiaya, setData: setFormBiaya, post: postBiaya, processing: procBiaya, reset: resetBiaya } = useForm({
         komponen_biaya_id: '',
-        jumlah: 1,
+        qty: 1,
+        satuan: 'unit',
         harga_satuan: 0,
         total: 0,
         keterangan: ''
@@ -83,8 +85,8 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
 
     // Kalkulasi Total otomatis
     useEffect(() => {
-        setFormBiaya('total', formBiaya.jumlah * formBiaya.harga_satuan);
-    }, [formBiaya.jumlah, formBiaya.harga_satuan]);
+        setFormBiaya('total', formBiaya.qty * formBiaya.harga_satuan);
+    }, [formBiaya.qty, formBiaya.harga_satuan]);
 
     const handleTambahBiaya = (e: React.FormEvent) => {
         e.preventDefault();
@@ -296,12 +298,16 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
                                     <div className="grid grid-cols-3 gap-2">
                                         <div className="col-span-1">
                                             <label className="block text-xs font-semibold text-slate-700 mb-1">Qty</label>
-                                            <input type="number" min="1" className="w-full border border-slate-300 p-2 text-sm rounded-lg" value={formBiaya.jumlah} onChange={e => setFormBiaya('jumlah', Number(e.target.value))} required />
+                                            <input type="number" min="1" className="w-full border border-slate-300 p-2 text-sm rounded-lg" value={formBiaya.qty} onChange={e => setFormBiaya('qty', Number(e.target.value))} required />
                                         </div>
                                         <div className="col-span-2">
                                             <label className="block text-xs font-semibold text-slate-700 mb-1">Tarif Satuan (Rp)</label>
                                             <input type="number" min="0" className="w-full border border-slate-300 p-2 text-sm rounded-lg" value={formBiaya.harga_satuan} onChange={e => setFormBiaya('harga_satuan', Number(e.target.value))} required />
                                         </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-700 mb-1">Satuan</label>
+                                        <input type="text" placeholder="Misal: unit, hari, paket" className="w-full border border-slate-300 p-2 text-sm rounded-lg" value={formBiaya.satuan} onChange={e => setFormBiaya('satuan', e.target.value)} />
                                     </div>
                                     <div>
                                         <label className="block text-xs font-semibold text-slate-700 mb-1">Keterangan (Opsional)</label>
@@ -341,7 +347,7 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
                                                             {b.komponen_biaya?.nama}
                                                             {b.keterangan && <span className="block font-normal text-[9px] text-slate-400 mt-0.5">{b.keterangan}</span>}
                                                         </td>
-                                                        <td className="px-4 py-3 text-center text-slate-600">{b.jumlah}</td>
+                                                        <td className="px-4 py-3 text-center text-slate-600">{b.qty ?? b.jumlah}</td>
                                                         <td className="px-4 py-3 text-right text-slate-600">{formatRp(b.harga_satuan)}</td>
                                                         <td className="px-4 py-3 text-right font-black text-indigo-700">{formatRp(b.total)}</td>
                                                     </tr>

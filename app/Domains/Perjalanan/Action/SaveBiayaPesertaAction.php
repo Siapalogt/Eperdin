@@ -16,15 +16,18 @@ class SaveBiayaPesertaAction
         $peserta = Peserta::findOrFail($pesertaId);
 
         // 2. Paksa kalkulasi total di back-end untuk menghindari manipulasi request dari luar
-        $totalKalkulasi = $data['jumlah'] * $data['harga_satuan'];
+        $qty = (int) ($data['qty'] ?? $data['jumlah'] ?? 1);
+        $hargaSatuan = (float) ($data['harga_satuan'] ?? 0);
+        $satuan = (string) ($data['satuan'] ?? 'unit');
+        $totalKalkulasi = $qty * $hargaSatuan;
 
         // 3. Simpan data rincian anggaran ke tabel t_biaya_peserta
         $biaya = new BiayaPeserta();
         $biaya->peserta_id = $peserta->id;
         $biaya->komponen_biaya_id = $data['komponen_biaya_id'];
-        $biaya->qty = $data['qty'];
-        $biaya->satuan = $data['satuan'];
-        $biaya->harga_satuan = $data['harga_satuan'];
+        $biaya->qty = $qty;
+        $biaya->satuan = $satuan;
+        $biaya->harga_satuan = $hargaSatuan;
         $biaya->total = $totalKalkulasi;
         $biaya->keterangan = $data['keterangan'] ?? null;
         $biaya->save();
