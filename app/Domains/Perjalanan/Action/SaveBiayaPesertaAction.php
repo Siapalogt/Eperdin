@@ -22,7 +22,8 @@ class SaveBiayaPesertaAction
         $biaya = new BiayaPeserta();
         $biaya->peserta_id = $peserta->id;
         $biaya->komponen_biaya_id = $data['komponen_biaya_id'];
-        $biaya->jumlah = $data['jumlah'];
+        $biaya->qty = $data['qty'];
+        $biaya->satuan = $data['satuan'];
         $biaya->harga_satuan = $data['harga_satuan'];
         $biaya->total = $totalKalkulasi;
         $biaya->keterangan = $data['keterangan'] ?? null;

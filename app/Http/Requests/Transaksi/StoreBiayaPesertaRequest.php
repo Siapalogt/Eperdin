@@ -15,7 +15,8 @@ class StoreBiayaPesertaRequest extends FormRequest
     {
         return [
             'komponen_biaya_id' => 'required|exists:m_komponen_biaya,id',
-            'jumlah'            => 'required|integer|min:1',
+            'qty'            => 'required|integer|min:1',
+            'satuan'            => 'required|string|max:50',
             'harga_satuan'      => 'required|numeric|min:0',
             'total'             => 'required|numeric|min:0',
             'keterangan'        => 'nullable|string|max:255',

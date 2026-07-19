@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nomor', 100)->unique(); // [cite: 27]
             $table->foreignId('template_perjalanan_id')->constrained('m_template_perjalanan'); // [cite: 27]
             $table->string('nama_kegiatan', 255); // [cite: 27]
+            $table->string('kategori_perjalanan', 100);
             $table->string('tujuan', 150); // [cite: 27]
             $table->string('lokasi', 255)->nullable(); // [cite: 27]
             $table->date('tanggal_berangkat'); // [cite: 27]

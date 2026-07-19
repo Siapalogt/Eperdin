@@ -32,7 +32,7 @@ class PerjalananController extends Controller
         ]);
     }
 
-    public function store(StorePerjalananRequest $request, CreatePerjalananDraftAction$action)
+    public function store(StorePerjalananRequest $request, CreatePerjalananDraftAction $action)
     {
         $action->execute($request->validated());
         return redirect()->route('perjalanan.index')
@@ -62,6 +62,7 @@ class PerjalananController extends Controller
         $validated =$request->validate([
             'nomor' => 'required|string|max:100|unique:t_perjalanan,nomor,' . $id,
             'nama_kegiatan' => 'required|string|max:255',
+            'kategori_perjalanan' => 'required|string|in:Bimtek,Kunjungan Kerja,Konsultasi,Rapat',
             'tujuan' => 'required|string|max:150',
             'lokasi' => 'nullable|string|max:255',
             'tanggal_berangkat' => 'required|date',

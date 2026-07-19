@@ -16,6 +16,7 @@ const Create: React.FC<Props> = ({ templates }) => {
         nomor: '',
         template_perjalanan_id: '',
         nama_kegiatan: '',
+        kategori_perjalanan: '',
         tujuan: '',
         lokasi: '',
         tanggal_berangkat: '',
@@ -105,6 +106,23 @@ const Create: React.FC<Props> = ({ templates }) => {
                                 onChange={e => setData('nama_kegiatan', e.target.value)}
                             />
                             {errors.nama_kegiatan && <p className="text-rose-500 text-[10px] mt-1">{errors.nama_kegiatan}</p>}
+                        </div>
+                        {/* Baris 3: Kategori_Perjalanan*/}
+                        <div>
+                            <label className="block text-xs font-bold text-slate-700 mb-1">Kategori Perjalanan</label>
+                            <select 
+                                className="w-full border border-slate-300 p-2.5 rounded-lg text-sm"
+                                value={data.kategori_perjalanan} 
+                                onChange={e => setData('kategori_perjalanan', e.target.value)}
+                                required
+                            >
+                                <option value="">-- Pilih Kategori --</option>
+                                <option value="Bimtek">Bimbingan Teknis</option>
+                                <option value="Kunjungan Kerja">Kunjungan Kerja</option>
+                                <option value="Konsultasi">Konsultasi</option>
+                                <option value="Rapat">Rapat Kerja</option>
+                            </select>
+                            {errors.kategori_perjalanan && <p className="text-rose-500 text-xs mt-1">{errors.kategori_perjalanan}</p>}
                         </div>
 
                         {/* Baris 3: Tujuan & Lokasi Spesifik */}

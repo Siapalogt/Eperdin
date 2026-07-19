@@ -17,6 +17,7 @@ class StorePerjalananRequest extends FormRequest
             'nomor' => 'required|unique:t_perjalanan,nomor',
             'template_perjalanan_id' => 'required|exists:m_template_perjalanan,id',
             'nama_kegiatan' => 'required|string|max:255',
+            'kategori_perjalanan' => 'required|string|in:Bimtek,Kunjungan Kerja,Konsultasi,Rapat',
             'tujuan' => 'required|string|max:150',
             'lokasi' => 'nullable|string|max:255',
             'tanggal_berangkat' => 'required|date',
