@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Master\TenagaAhliController; 
 use App\Http\Controllers\Transaksi\BiayaPesertaController;
 use App\Http\Controllers\Master\TemplateDetailController;
+use App\Http\Controllers\Master\KategoriController;
 use Inertia\Inertia;
 
 // ==========================================
@@ -64,6 +65,7 @@ Route::get('/dashboard', function () {
         Route::resource('tenaga-ahli', TenagaAhliController::class);    
         Route::post('template/{template}/detail', [TemplateDetailController::class, 'store']);
         Route::delete('template/{template}/detail/{detail}', [TemplateDetailController::class, 'destroy']);
+        Route::resource('kategori', KategoriController::class)->except(['create', 'show', 'edit']);
     });
 
     // 4. Rute Transaksi Perjalanan
