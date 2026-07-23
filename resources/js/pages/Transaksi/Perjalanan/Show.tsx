@@ -128,10 +128,21 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
 
     return (
         <AppLayout title={`Detail Perjalanan: ${perjalanan?.nomor || '-'}`}>
-            <div className="mb-4">
-                {/* 💡 FIX SSR: Menggunakan href="/perjalanan" */}
+            {/* HEADER AKSI */}
+            <div className="mb-4 flex justify-between items-center">
                 <Link href="/perjalanan" className="text-xs text-slate-500 hover:text-blue-600 font-bold inline-flex items-center space-x-1.5">
                     <span>&larr;</span><span>Kembali ke Daftar</span>
+                </Link>
+
+                {/* TOMBOL EDIT TRANSAKSI DIPINDAH KE SINI */}
+                <Link 
+                    href={`/perjalanan/${perjalanan.id}/edit`} 
+                    className="inline-flex items-center px-4 py-2 bg-amber-400 hover:bg-amber-500 text-indigo-950 text-xs font-bold rounded-lg shadow-sm transition-colors"
+                >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit Data Perjalanan
                 </Link>
             </div>
 

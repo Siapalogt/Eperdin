@@ -331,6 +331,12 @@ const Index: React.FC<Props> = ({ listPerjalanan }) => {
                                             >
                                                 Hapus
                                             </button>
+                                            <Link 
+                                                href={`/perjalanan/${row.id}/edit`} 
+                                                className="text-amber-600 transition hover:text-amber-800 font-bold hover:underline"
+                                            >
+                                                Edit
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))

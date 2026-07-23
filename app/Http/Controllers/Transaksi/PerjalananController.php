@@ -84,6 +84,15 @@ class PerjalananController extends Controller
             ->with('success', 'Data perjalanan dinas berhasil diperbarui!');
     }
 
+    public function edit($id)
+    {
+        $perjalanan = Perjalanan::findOrFail($id);
+
+        return Inertia::render('Transaksi/Perjalanan/Edit', [
+            'perjalanan' => $perjalanan,
+        ]);
+    }
+
     public function destroy($id)
     {
         $perjalanan = Perjalanan::findOrFail($id);
