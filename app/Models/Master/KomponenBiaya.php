@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class KomponenBiaya extends Model
 {
     protected $table = 'm_komponen_biaya';
-    protected $fillable = ['kelompok_biaya_id', 'nama'];
+
+    protected $fillable = ['kelompok_biaya_id', 'nama', 'kode', 'berlaku_untuk'];
 
     // Relasi balik ke Kelompok Biaya induknya
     public function kelompok_biaya(): BelongsTo
