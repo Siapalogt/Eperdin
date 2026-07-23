@@ -11,6 +11,7 @@ interface KomponenItem {
         id: number;
         nama: string;
     };
+    kode: string;
 }
 
 interface KelompokItem {
@@ -28,6 +29,7 @@ const Index: React.FC<Props> = ({ listKomponen, listKelompok }) => {
         kelompok_biaya_id: '',
         kode: '', // 💡 State kode ditambahkan
         nama: '',
+        kode : '',
     });
 
     const [editId, setEditId] = useState<number | null>(null);
