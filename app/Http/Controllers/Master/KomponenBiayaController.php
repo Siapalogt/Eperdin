@@ -33,4 +33,14 @@ class KomponenBiayaController extends Controller
         $action->execute($id, $request->validated());
         return redirect()->back()->with('success', 'Komponen Biaya berhasil diperbarui!');
     }
+
+    public function destroy(\App\Models\Master\KomponenBiaya $komponenBiaya)
+    {
+        try {
+            $komponenBiaya->delete();
+            return redirect()->back()->with('success', 'Data Komponen Biaya berhasil dihapus!');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return redirect()->back()->with('error', 'Data tidak bisa dihapus karena sudah dipakai dalam anggaran perjalanan.');
+        }
+    }
 }

@@ -53,15 +53,15 @@ Route::get('/dashboard', function () {
     })->name('dashboard');
 
     // 3. Rute Master Data
+    // 3. Rute Master Data
     Route::prefix('master')->name('master.')->group(function () {
         Route::resource('asn', AsnController::class);
         Route::resource('dewan', AnggotaDewanController::class);
         Route::resource('pjlp', PjlpController::class);
         Route::resource('template', TemplatePerjalananController::class);
-        Route::resource('kelompok-biaya', \App\Http\Controllers\Master\KelompokBiayaController::class)->only(['index', 'store', 'update']);
-        Route::resource('komponen-biaya', \App\Http\Controllers\Master\KomponenBiayaController::class)->only(['index', 'store', 'update']);
-        Route::resource('tenaga-ahli', TenagaAhliController::class)->only(['index', 'store', 'update']);
-        Route::resource('template', TemplatePerjalananController::class);
+        Route::resource('kelompok-biaya', \App\Http\Controllers\Master\KelompokBiayaController::class);
+        Route::resource('komponen-biaya', \App\Http\Controllers\Master\KomponenBiayaController::class);
+        Route::resource('tenaga-ahli', TenagaAhliController::class);    
         Route::post('template/{template}/detail', [TemplateDetailController::class, 'store']);
         Route::delete('template/{template}/detail/{detail}', [TemplateDetailController::class, 'destroy']);
     });

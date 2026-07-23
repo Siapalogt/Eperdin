@@ -29,4 +29,14 @@ class KelompokBiayaController extends Controller
         $action->execute($id, $request->validated());
         return redirect()->back()->with('success', 'Kelompok Biaya berhasil diperbarui!');
     }
+
+    public function destroy(\App\Models\Master\KelompokBiaya $kelompokBiaya)
+    {
+        try {
+            $kelompokBiaya->delete();
+            return redirect()->back()->with('success', 'Data Kelompok Biaya berhasil dihapus!');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return redirect()->back()->with('error', 'Data tidak bisa dihapus karena sedang terkait dengan data komponen biaya.');
+        }
+    }
 }

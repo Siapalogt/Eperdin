@@ -33,4 +33,14 @@ class TenagaAhliController extends Controller
         $action->execute($id, $request->validated());
         return redirect()->back()->with('success', 'Tenaga Ahli berhasil diperbarui!');
     }
+
+    public function destroy(\App\Models\Master\TenagaAhli $tenagaAhli)
+    {
+        try {
+            $tenagaAhli->delete();
+            return redirect()->back()->with('success', 'Data Tenaga Ahli berhasil dihapus!');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return redirect()->back()->with('error', 'Data tidak bisa dihapus karena sedang digunakan di transaksi lain.');
+        }
+    }
 }
