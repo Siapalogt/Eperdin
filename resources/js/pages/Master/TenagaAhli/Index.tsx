@@ -160,7 +160,7 @@ const Index: React.FC<Props> = ({ listTa, listDewan }) => {
                                                     onClick={() =>
                                                         handleEdit(item)
                                                     }
-                                                    className="font-bold text-indigo-600 transition hover:text-indigo-900 hover:underline"
+                                                    className="text-xs font-bold text-indigo-600 transition hover:text-indigo-900 hover:underline"
                                                 >
                                                     Edit
                                                 </button>
@@ -168,7 +168,7 @@ const Index: React.FC<Props> = ({ listTa, listDewan }) => {
                                                     onClick={() =>
                                                         handleDelete(item.id)
                                                     }
-                                                    className="font-bold text-rose-600 transition hover:text-rose-900 hover:underline"
+                                                    className="text-xs font-bold text-rose-600 transition hover:text-rose-900 hover:underline"
                                                 >
                                                     Hapus
                                                 </button>
@@ -310,8 +310,8 @@ const Index: React.FC<Props> = ({ listTa, listDewan }) => {
                                 {processing
                                     ? 'Menyimpan...'
                                     : editId
-                                      ? 'Simpan Perubahan'
-                                      : 'Tambah TA'}
+                                        ? 'Simpan Perubahan'
+                                        : 'Tambah TA'}
                             </button>
                             {editId && (
                                 <button

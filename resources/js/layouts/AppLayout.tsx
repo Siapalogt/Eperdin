@@ -33,7 +33,23 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
         },
     ];
 
-    const masterItems = [
+    type MenuChild = {
+        label: string;
+        href: string | null;
+        icon: React.ReactNode;
+    };
+
+    type MenuItem = {
+        label: string;
+        href: string;
+        icon: React.ReactNode;
+        children?: MenuChild[];
+        // false berarti baris induk ini HANYA berfungsi sebagai toggle (tidak menavigasi),
+        // karena halaman sebenarnya ada di salah satu child-nya. Default: true.
+        parentIsLink?: boolean;
+    };
+
+    const masterItems: MenuItem[] = [
         {
             label: 'Master ASN',
             href: '/master/asn',
@@ -62,7 +78,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
             )
         },
         {
-            label : 'Master Tenaga Ahli',
+            label: 'Master Tenaga Ahli',
             href: '/master/tenaga-ahli',
             icon: (
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,41 +89,75 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
         {
             label: 'Master Template',
             href: '/master/template',
+            parentIsLink: false,
             icon: (
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-            )
+            ),
+            children: [
+                {
+                    label: 'Master Template Detail',
+                    // Belum ada link tetap untuk halaman ini (akan ditentukan kemudian)
+                    href: null,
+                    icon: (
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                    )
+                }
+            ]
         },
         {
-            label : 'Master Kelompok Biaya',
+            label: 'Master Kelompok Biaya',
             href: '/master/kelompok-biaya',
             icon: (
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
-            )
+            ),
+            children: [
+                {
+                    label: 'Master Komponen Biaya',
+                    href: '/master/komponen-biaya',
+                    icon: (
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    )
+                }
+            ]
         },
-        {
-            label : 'Master Komponen Biaya',
-            href: '/master/komponen-biaya',
-            icon: (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            )
-        },
-        
     ];
+
+    // Submenu (Komponen Biaya / Template Detail) otomatis terbuka jika salah satu halamannya sedang aktif
+    const [openSubmenu, setOpenSubmenu] = useState<string | null>(
+        masterItems.find(
+            (item) =>
+                item.children &&
+                (currentPath === item.href ||
+                    currentPath.startsWith(item.href + '/') ||
+                    item.children.some(
+                        (child) =>
+                            !!child.href &&
+                            (currentPath === child.href ||
+                                currentPath.startsWith(child.href + '/'))
+                    ))
+        )?.href || null
+    );
 
     const isLinkActive = (href: string) => {
         return currentPath === href || currentPath.startsWith(href + '/');
     };
 
+    const toggleSubmenu = (href: string) => {
+        setOpenSubmenu((prev) => (prev === href ? null : href));
+    };
+
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans">
             {/* Sidebar - Desktop */}
-            <aside 
+            <aside
                 className="hidden md:flex flex-col w-64 text-white shrink-0 shadow-xl border-r border-indigo-900/30"
                 style={{ backgroundColor: '#1a237e' }}
             >
@@ -132,11 +182,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                 <li key={item.href}>
                                     <Link
                                         href={item.href}
-                                        className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition duration-200 ${
-                                            isLinkActive(item.href)
-                                                ? 'bg-indigo-700/55 text-white shadow-inner border-l-4 border-amber-400'
-                                                : 'text-indigo-200 hover:bg-indigo-900/30 hover:text-white'
-                                        }`}
+                                        className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition duration-200 ${isLinkActive(item.href)
+                                            ? 'bg-indigo-700/55 text-white shadow-inner border-l-4 border-amber-400'
+                                            : 'text-indigo-200 hover:bg-indigo-900/30 hover:text-white'
+                                            }`}
                                     >
                                         {item.icon}
                                         <span>{item.label}</span>
@@ -151,17 +200,92 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                         <ul className="mt-2 space-y-1.5">
                             {masterItems.map((item) => (
                                 <li key={item.href}>
-                                    <Link
-                                        href={item.href}
-                                        className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition duration-200 ${
-                                            isLinkActive(item.href)
+                                    {item.children ? (
+                                        <>
+                                            <div
+                                                className={`flex items-center rounded-xl text-sm font-medium transition duration-200 ${isLinkActive(item.href)
+                                                    ? 'bg-indigo-700/55 text-white shadow-inner border-l-4 border-amber-400'
+                                                    : 'text-indigo-200 hover:bg-indigo-900/30 hover:text-white'
+                                                    }`}
+                                            >
+                                                {item.parentIsLink === false ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => toggleSubmenu(item.href)}
+                                                        className="flex flex-1 items-center space-x-3 px-3 py-2.5 text-left outline-none focus:outline-none"
+                                                    >
+                                                        {item.icon}
+                                                        <span>{item.label}</span>
+                                                    </button>
+                                                ) : (
+                                                    <Link
+                                                        href={item.href}
+                                                        className="flex flex-1 items-center space-x-3 px-3 py-2.5"
+                                                    >
+                                                        {item.icon}
+                                                        <span>{item.label}</span>
+                                                    </Link>
+                                                )}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => toggleSubmenu(item.href)}
+                                                    className="px-2.5 py-2.5 outline-none focus:outline-none"
+                                                    aria-label={`Toggle ${item.label} submenu`}
+                                                >
+                                                    <svg
+                                                        className={`w-3.5 h-3.5 transition-transform duration-200 ${openSubmenu === item.href ? 'rotate-180' : ''
+                                                            }`}
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            {openSubmenu === item.href && (
+                                                <ul className="mt-1.5 ml-4 space-y-1.5 border-l border-indigo-800/60 pl-3">
+                                                    {item.children.map((child) =>
+                                                        child.href ? (
+                                                            <li key={child.href}>
+                                                                <Link
+                                                                    href={child.href}
+                                                                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition duration-200 ${isLinkActive(child.href)
+                                                                        ? 'bg-indigo-700/55 text-white shadow-inner border-l-4 border-amber-400'
+                                                                        : 'text-indigo-200 hover:bg-indigo-900/30 hover:text-white'
+                                                                        }`}
+                                                                >
+                                                                    {child.icon}
+                                                                    <span>{child.label}</span>
+                                                                </Link>
+                                                            </li>
+                                                        ) : (
+                                                            <li key={child.label}>
+                                                                <div
+                                                                    className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-indigo-300/50 cursor-not-allowed"
+                                                                    title="Buka melalui tombol Detail pada daftar template"
+                                                                >
+                                                                    {child.icon}
+                                                                    <span>{child.label}</span>
+                                                                </div>
+                                                            </li>
+                                                        )
+                                                    )}
+                                                </ul>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <Link
+                                            href={item.href}
+                                            className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition duration-200 ${isLinkActive(item.href)
                                                 ? 'bg-indigo-700/55 text-white shadow-inner border-l-4 border-amber-400'
                                                 : 'text-indigo-200 hover:bg-indigo-900/30 hover:text-white'
-                                        }`}
-                                    >
-                                        {item.icon}
-                                        <span>{item.label}</span>
-                                    </Link>
+                                                }`}
+                                        >
+                                            {item.icon}
+                                            <span>{item.label}</span>
+                                        </Link>
+                                    )}
                                 </li>
                             ))}
                         </ul>
@@ -172,7 +296,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                 <div className="p-4 border-t border-indigo-900/50 bg-indigo-950/40 text-center text-[10px] text-indigo-300/50">
                     &copy; 2026 DPRD DKI Jakarta
                 </div>
-            </aside>    
+            </aside>
 
             {/* Mobile Header */}
             <header className="md:hidden flex items-center justify-between px-6 py-4 bg-indigo-950 text-white shadow-md">
@@ -182,8 +306,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                     </div>
                     <span className="font-extrabold text-sm tracking-wider">e-Perdin DPRD</span>
                 </div>
-                <button 
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+                <button
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     className="p-1.5 bg-indigo-900/50 rounded-lg hover:bg-indigo-950 transition"
                 >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,7 +320,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
             {isMobileMenuOpen && (
                 <div className="md:hidden fixed inset-0 z-50 flex">
                     <div className="fixed inset-0 bg-black/40" onClick={() => setIsMobileMenuOpen(false)}></div>
-                    <div 
+                    <div
                         className="relative flex flex-col w-64 text-white shadow-xl"
                         style={{ backgroundColor: '#1a237e' }}
                     >
@@ -219,9 +343,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                         <li key={item.href} onClick={() => setIsMobileMenuOpen(false)}>
                                             <Link
                                                 href={item.href}
-                                                className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition ${
-                                                    isLinkActive(item.href) ? 'bg-indigo-700/55 text-white' : 'text-indigo-200'
-                                                }`}
+                                                className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition ${isLinkActive(item.href) ? 'bg-indigo-700/55 text-white' : 'text-indigo-200'
+                                                    }`}
                                             >
                                                 {item.icon}
                                                 <span>{item.label}</span>
@@ -234,34 +357,108 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                 <span className="text-[10px] font-bold text-indigo-300/60 uppercase tracking-widest px-3">Master Data</span>
                                 <ul className="mt-2 space-y-1">
                                     {masterItems.map((item) => (
-                                        <li key={item.href} onClick={() => setIsMobileMenuOpen(false)}>
-                                            <Link
-                                                href={item.href}
-                                                className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition ${
-                                                    isLinkActive(item.href) ? 'bg-indigo-700/55 text-white' : 'text-indigo-200'
-                                                }`}
-                                            >
-                                                {item.icon}
-                                                <span>{item.label}</span>
-                                            </Link>
+                                        <li key={item.href}>
+                                            {item.children ? (
+                                                <>
+                                                    <div
+                                                        className={`flex items-center rounded-lg text-sm transition ${isLinkActive(item.href) ? 'bg-indigo-700/55 text-white' : 'text-indigo-200'
+                                                            }`}
+                                                    >
+                                                        {item.parentIsLink === false ? (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => toggleSubmenu(item.href)}
+                                                                className="flex flex-1 items-center space-x-3 px-3 py-2 text-left outline-none focus:outline-none"
+                                                            >
+                                                                {item.icon}
+                                                                <span>{item.label}</span>
+                                                            </button>
+                                                        ) : (
+                                                            <Link
+                                                                href={item.href}
+                                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                                className="flex flex-1 items-center space-x-3 px-3 py-2"
+                                                            >
+                                                                {item.icon}
+                                                                <span>{item.label}</span>
+                                                            </Link>
+                                                        )}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => toggleSubmenu(item.href)}
+                                                            className="px-2.5 py-2 outline-none focus:outline-none"
+                                                            aria-label={`Toggle ${item.label} submenu`}
+                                                        >
+                                                            <svg
+                                                                className={`w-3.5 h-3.5 transition-transform duration-200 ${openSubmenu === item.href ? 'rotate-180' : ''
+                                                                    }`}
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    {openSubmenu === item.href && (
+                                                        <ul className="mt-1 ml-4 space-y-1 border-l border-indigo-800/60 pl-3">
+                                                            {item.children.map((child) =>
+                                                                child.href ? (
+                                                                    <li key={child.href} onClick={() => setIsMobileMenuOpen(false)}>
+                                                                        <Link
+                                                                            href={child.href}
+                                                                            className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition ${isLinkActive(child.href) ? 'bg-indigo-700/55 text-white' : 'text-indigo-200'
+                                                                                }`}
+                                                                        >
+                                                                            {child.icon}
+                                                                            <span>{child.label}</span>
+                                                                        </Link>
+                                                                    </li>
+                                                                ) : (
+                                                                    <li key={child.label}>
+                                                                        <div
+                                                                            className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm text-indigo-300/50 cursor-not-allowed"
+                                                                            title="Buka melalui tombol Detail pada daftar template"
+                                                                        >
+                                                                            {child.icon}
+                                                                            <span>{child.label}</span>
+                                                                        </div>
+                                                                    </li>
+                                                                )
+                                                            )}
+                                                        </ul>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <div onClick={() => setIsMobileMenuOpen(false)}>
+                                                    <Link
+                                                        href={item.href}
+                                                        className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition ${isLinkActive(item.href) ? 'bg-indigo-700/55 text-white' : 'text-indigo-200'
+                                                            }`}
+                                                    >
+                                                        {item.icon}
+                                                        <span>{item.label}</span>
+                                                    </Link>
+                                                </div>
+                                            )}
                                         </li>
                                     ))}
                                 </ul>
                             </div>
                             <div className="p-4 border-t border-indigo-900/50 mt-auto">
-                            <Link 
-                                href="/logout" 
-                                method="post" 
-                                as="button" 
-                                className="w-full flex items-center justify-center space-x-2 bg-rose-500/20 text-rose-300 hover:bg-rose-500 hover:text-white py-3 rounded-lg text-sm font-bold transition shadow-sm"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
-                                <span>Keluar Sistem</span>
-                            </Link>
+                                <Link
+                                    href="/logout"
+                                    method="post"
+                                    as="button"
+                                    className="w-full flex items-center justify-center space-x-2 bg-rose-500/20 text-rose-300 hover:bg-rose-500 hover:text-white py-3 rounded-lg text-sm font-bold transition shadow-sm"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    <span>Keluar Sistem</span>
+                                </Link>
 
-                            
+
                             </div>
                         </div>
                     </div>
@@ -278,30 +475,30 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                     </div>
                     {/* User Profile Info */}
                     {/* User Profile Info */}
-                <div className="flex items-center space-x-4">
-                    <div className="text-right">
-                        <span className="block text-xs font-bold text-slate-700">Administrator e-Perdin</span>
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-blue-100 text-blue-800 border border-blue-200 uppercase tracking-wider">Super Admin</span>
+                    <div className="flex items-center space-x-4">
+                        <div className="text-right">
+                            <span className="block text-xs font-bold text-slate-700">Administrator e-Perdin</span>
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-extrabold bg-blue-100 text-blue-800 border border-blue-200 uppercase tracking-wider">Super Admin</span>
+                        </div>
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden font-black text-slate-600 shadow-inner">
+                            AD
+                        </div>
+
+                        {/* 💡 TOMBOL LOGOUT DESKTOP BARU */}
+                        <div className="border-l border-slate-200 pl-4">
+                            <Link
+                                href="/logout"
+                                method="post"
+                                as="button"
+                                className="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white rounded-xl transition border border-rose-100 shadow-sm"
+                                title="Keluar (Logout)"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                            </Link>
+                        </div>
                     </div>
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden font-black text-slate-600 shadow-inner">
-                        AD
-                    </div>
-                    
-                    {/* 💡 TOMBOL LOGOUT DESKTOP BARU */}
-                    <div className="border-l border-slate-200 pl-4">
-                        <Link 
-                            href="/logout" 
-                            method="post" 
-                            as="button" 
-                            className="flex items-center justify-center w-10 h-10 bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white rounded-xl transition border border-rose-100 shadow-sm"
-                            title="Keluar (Logout)"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                        </Link>
-                    </div>
-                </div>
                 </header>
 
                 {/* Content */}
