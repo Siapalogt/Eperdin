@@ -7,16 +7,24 @@ interface Template {
     nama: string;
 }
 
-interface Props {
-    templates: Template[];
+// 💡 Tambahkan interface untuk Kategori
+interface Kategori {
+    id: number;
+    kode: string;
+    nama: string;
 }
 
-const Create: React.FC<Props> = ({ templates }) => {
+interface Props {
+    templates: Template[];
+    kategoris: Kategori[]; // 💡 Tambahkan prop kategoris
+}
+
+const Create: React.FC<Props> = ({ templates, kategoris }) => {
     const { data, setData, post, processing, errors } = useForm({
         nomor: '',
         template_perjalanan_id: '',
         nama_kegiatan: '',
-        kategori_perjalanan: '',
+        kategori_id: '', // 💡 Ubah nama field jadi kategori_id (Foreign Key)
         tujuan: '',
         lokasi: '',
         tanggal_berangkat: '',
@@ -107,25 +115,28 @@ const Create: React.FC<Props> = ({ templates }) => {
                             />
                             {errors.nama_kegiatan && <p className="text-rose-500 text-[10px] mt-1">{errors.nama_kegiatan}</p>}
                         </div>
-                        {/* Baris 3: Kategori_Perjalanan*/}
+
+                        {/* Baris 3: Kategori_Perjalanan */}
                         <div>
-                            <label className="block text-xs font-bold text-slate-700 mb-1">Kategori Perjalanan</label>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1">Kategori Perjalanan <span className="text-rose-500">*</span></label>
                             <select 
-                                className="w-full border border-slate-300 p-2.5 rounded-lg text-sm"
-                                value={data.kategori_perjalanan} 
-                                onChange={e => setData('kategori_perjalanan', e.target.value)}
+                                className="w-full border border-slate-200 p-2.5 rounded-xl text-xs bg-white focus:outline-none focus:border-blue-600 transition"
+                                value={data.kategori_id} // 💡 Sekarang di-bind ke kategori_id
+                                onChange={e => setData('kategori_id', e.target.value)}
                                 required
                             >
                                 <option value="">-- Pilih Kategori --</option>
-                                <option value="Bimtek">Bimbingan Teknis</option>
-                                <option value="Kunjungan Kerja">Kunjungan Kerja</option>
-                                <option value="Konsultasi">Konsultasi</option>
-                                <option value="Rapat">Rapat Kerja</option>
+                                {/* 💡 Looping data Master Kategori di sini */}
+                                {kategoris.map(kategori => (
+                                    <option key={kategori.id} value={kategori.id}>
+                                        {kategori.kode} - {kategori.nama}
+                                    </option>
+                                ))}
                             </select>
-                            {errors.kategori_perjalanan && <p className="text-rose-500 text-xs mt-1">{errors.kategori_perjalanan}</p>}
+                            {errors.kategori_id && <p className="text-rose-500 text-[10px] mt-1">{errors.kategori_id}</p>}
                         </div>
 
-                        {/* Baris 3: Tujuan & Lokasi Spesifik */}
+                        {/* Baris 4: Tujuan & Lokasi Spesifik */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-xs font-semibold text-slate-700 mb-1">Kota / Daerah Tujuan <span className="text-rose-500">*</span></label>
@@ -151,7 +162,7 @@ const Create: React.FC<Props> = ({ templates }) => {
                             </div>
                         </div>
 
-                        {/* Baris 4: Tanggal & Durasi Otomatis */}
+                        {/* Baris 5: Tanggal & Durasi Otomatis */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label className="block text-xs font-semibold text-slate-700 mb-1">Tanggal Berangkat <span className="text-rose-500">*</span></label>
@@ -186,7 +197,7 @@ const Create: React.FC<Props> = ({ templates }) => {
                             </div>
                         </div>
 
-                        {/* Baris 5: Keterangan Tambahan */}
+                        {/* Baris 6: Keterangan Tambahan */}
                         <div>
                             <label className="block text-xs font-semibold text-slate-700 mb-1">Keterangan / Catatan Tambahan</label>
                             <textarea 

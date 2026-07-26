@@ -13,6 +13,7 @@ use App\Models\Transaksi\Log;
 use App\Models\Master\Asn;
 use App\Models\Master\AnggotaDewan;
 use App\Models\Master\TemplatePerjalanan;
+use App\Models\Master\Kategori;
 
 class PerjalananSeeder extends Seeder
 {
@@ -45,12 +46,20 @@ class PerjalananSeeder extends Seeder
         
         $templateId = $template->id;
 
+        $kategori = Kategori::first();
+        if (!$kategori) {
+            $kategori = Kategori::create([
+                'nama' => 'Kategori Default', 
+            ]);
+        }
+        $kategoriId = $kategori->id;
+
         // 1. Buat data dummy Perjalanan 1 (Status: Draft)
         $perjalanan1 = Perjalanan::create([
             'template_perjalanan_id' => $templateId,
             'nomor' => '001/SPT-DPRD/DKI/2026',
             'nama_kegiatan' => 'Studi Banding Pengelolaan Anggaran dan Pendapatan Daerah',
-            'kategori_perjalanan' => 'Kunjungan Kerja',
+            'kategori_id' => $kategoriId, // 💡 PERUBAHAN: Gunakan variabel $kategoriId, bukan angka 2
             'tujuan' => 'Bandung',
             'lokasi' => 'Kantor DPRD Provinsi Jawa Barat',
             'tanggal_berangkat' => '2026-08-01',
@@ -65,7 +74,7 @@ class PerjalananSeeder extends Seeder
             'template_perjalanan_id' => $templateId,
             'nomor' => '002/SPT-DPRD/DKI/2026',
             'nama_kegiatan' => 'Bimbingan Teknis Penyusunan Peraturan Daerah',
-            'kategori_perjalanan' => 'Bimtek',
+            'kategori_id' => $kategoriId, // 💡 PERUBAHAN: Gunakan variabel $kategoriId, bukan angka 1
             'tujuan' => 'Yogyakarta',
             'lokasi' => 'Hotel Melia Purosani Yogyakarta',
             'tanggal_berangkat' => '2026-08-10',
@@ -80,7 +89,7 @@ class PerjalananSeeder extends Seeder
             'template_perjalanan_id' => $templateId,
             'nomor' => '003/SPT-DPRD/DKI/2026',
             'nama_kegiatan' => 'Rapat Koordinasi Nasional Sekretariat DPRD',
-            'kategori_perjalanan' => 'Rapat',
+            'kategori_id' => $kategoriId, // 💡 PERUBAHAN: Ganti kategori_perjalanan menjadi kategori_id
             'tujuan' => 'Bali',
             'lokasi' => 'The Stones Hotel Legian Bali',
             'tanggal_berangkat' => '2026-07-05',
@@ -97,7 +106,7 @@ class PerjalananSeeder extends Seeder
         if ($asnSample) {
             Peserta::create([
                 'perjalanan_id' => $perjalanan1->id,
-                'jenis_peserta' => 'Asn',
+                'jenis_peserta' => Asn::class,
                 'peserta_id' => $asnSample->id,
             ]);
         }
@@ -105,7 +114,7 @@ class PerjalananSeeder extends Seeder
         if ($dewanSample) {
             Peserta::create([
                 'perjalanan_id' => $perjalanan1->id,
-                'jenis_peserta' => 'Dewan',
+                'jenis_peserta' => AnggotaDewan::class,
                 'peserta_id' => $dewanSample->id,
             ]);
         }

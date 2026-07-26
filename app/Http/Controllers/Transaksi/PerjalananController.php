@@ -12,6 +12,7 @@ use App\Models\Master\Pjlp;
 use App\Models\Master\TemplatePerjalanan;
 use App\Models\Master\TenagaAhli;
 use App\Models\Transaksi\Perjalanan;
+use App\Models\Master\Kategori;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -31,9 +32,11 @@ class PerjalananController extends Controller
     public function create()
     {
         $templates = TemplatePerjalanan::where('status', 'Aktif')->get();
+        $kategoris = Kategori::all();
 
         return Inertia::render('Transaksi/Perjalanan/Create', [
             'templates' => $templates,
+            'kategoris' => $kategoris,
         ]);
     }
 
@@ -68,7 +71,7 @@ class PerjalananController extends Controller
         $validated = $request->validate([
             'nomor' => 'required|string|max:100|unique:t_perjalanan,nomor,'.$id,
             'nama_kegiatan' => 'required|string|max:255',
-            'kategori_perjalanan' => 'required|string|in:Bimtek,Kunjungan Kerja,Konsultasi,Rapat',
+            'kategori_id' => 'required|exists:m_kategori,id',
             'tujuan' => 'required|string|max:150',
             'lokasi' => 'nullable|string|max:255',
             'tanggal_berangkat' => 'required|date',
