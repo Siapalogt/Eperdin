@@ -9,7 +9,9 @@ class FieldKomponen extends Model
 {
     protected $table = 'm_field_komponen';
 
-    // Relasi balik ke Komponen Biaya induknya
+    protected $guarded = [];
+
+    // Rincian Biaya (Field) ini dimiliki oleh satu Komponen Biaya
     public function komponen_biaya(): BelongsTo
     {
         return $this->belongsTo(KomponenBiaya::class, 'komponen_biaya_id');

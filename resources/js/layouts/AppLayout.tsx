@@ -11,9 +11,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
 
     const currentPath = window.location.pathname;
 
-    // STATE DROP DOWN
+
     const [isBiayaOpen, setIsBiayaOpen] = useState(
-        currentPath.startsWith('/master/kelompok-biaya') || currentPath.startsWith('/master/komponen-biaya')
+        currentPath.startsWith('/master/kelompok-biaya') || 
+        currentPath.startsWith('/master/komponen-biaya') ||
+        currentPath.startsWith('/master/field-komponen')
     );
     const [isTemplateOpen, setIsTemplateOpen] = useState(
         currentPath.startsWith('/master/template')
@@ -77,8 +79,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                 </svg>
             )
-            
-
         },
         {
             label : 'Master Kategori',
@@ -190,7 +190,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                         </svg>
                                         <span>Master Template</span>
                                     </Link>
-                                    {/* Ruang untuk sub-menu template lainnya di masa depan */}
                                 </div>
                             </li>
 
@@ -214,7 +213,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
-                                <div className={`overflow-hidden transition-all duration-300 ease-in-out flex flex-col space-y-1 ${isBiayaOpen ? 'max-h-40 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
+                                {/* max-h-60 dirubah agar muat untuk 3 list menu */}
+                                <div className={`overflow-hidden transition-all duration-300 ease-in-out flex flex-col space-y-1 ${isBiayaOpen ? 'max-h-60 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
                                     <Link
                                         href="/master/kelompok-biaya"
                                         className={`flex items-center space-x-3 pl-11 pr-3 py-2 rounded-xl text-sm font-medium transition duration-200 ${
@@ -241,6 +241,21 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                         <span>Master Komponen Biaya</span>
+                                    </Link>
+
+                                    {/* MENU BARU DITAMBAHKAN DI SINI */}
+                                    <Link
+                                        href="/master/field-komponen"
+                                        className={`flex items-center space-x-3 pl-11 pr-3 py-2 rounded-xl text-sm font-medium transition duration-200 ${
+                                            isLinkActive('/master/field-komponen')
+                                                ? 'bg-indigo-700/55 text-white shadow-inner border-l-4 border-amber-400'
+                                                : 'text-indigo-300 hover:bg-indigo-900/30 hover:text-white'
+                                        }`}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                        </svg>
+                                        <span>Master Rincian Biaya</span>
                                     </Link>
                                 </div>
                             </li>
@@ -379,7 +394,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                             </svg>
                                         </button>
-                                        <div className={`overflow-hidden transition-all duration-300 ease-in-out flex flex-col space-y-1 ${isBiayaOpen ? 'max-h-32 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
+                                        {/* max-h-48 untuk mengakomodasi 3 menu di mobile */}
+                                        <div className={`overflow-hidden transition-all duration-300 ease-in-out flex flex-col space-y-1 ${isBiayaOpen ? 'max-h-48 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
                                             <Link
                                                 href="/master/kelompok-biaya"
                                                 onClick={() => setIsMobileMenuOpen(false)}
@@ -392,6 +408,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                                 </svg>
                                                 <span>Master Kelompok Biaya</span>
                                             </Link>
+                                            
                                             <Link
                                                 href="/master/komponen-biaya"
                                                 onClick={() => setIsMobileMenuOpen(false)}
@@ -403,6 +420,20 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                                 <span>Master Komponen Biaya</span>
+                                            </Link>
+
+                                            {/* MENU BARU DITAMBAHKAN DI SINI */}
+                                            <Link
+                                                href="/master/field-komponen"
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className={`flex items-center space-x-3 pl-10 pr-3 py-2 rounded-lg text-sm transition ${
+                                                    isLinkActive('/master/field-komponen') ? 'bg-indigo-700/55 text-white' : 'text-indigo-300 hover:bg-indigo-800/30'
+                                                }`}
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                                </svg>
+                                                <span>Master Rincian Biaya</span>
                                             </Link>
                                         </div>
                                     </li>
