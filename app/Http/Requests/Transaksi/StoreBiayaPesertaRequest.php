@@ -15,10 +15,12 @@ class StoreBiayaPesertaRequest extends FormRequest
     {
         $data = $this->all();
 
+        // Fallback untuk qty jika frontend mengirimkan 'jumlah'
         if (! array_key_exists('qty', $data) && array_key_exists('jumlah', $data)) {
             $data['qty'] = $data['jumlah'];
         }
 
+        // Fallback untuk satuan jika kosong
         if (! array_key_exists('satuan', $data) || blank($data['satuan'])) {
             $data['satuan'] = 'unit';
         }
@@ -30,11 +32,12 @@ class StoreBiayaPesertaRequest extends FormRequest
     {
         return [
             'komponen_biaya_id' => 'required|exists:m_komponen_biaya,id',
-            'qty' => 'required|integer|min:1',
-            'satuan' => 'nullable|string|max:50',
-            'harga_satuan' => 'required|numeric|min:0',
-            'total' => 'nullable|numeric|min:0',
-            'keterangan' => 'nullable|string|max:255',
+            'qty'               => 'required|integer|min:1',
+            'satuan'            => 'nullable|string|max:50',
+            'harga_satuan'      => 'required|numeric|min:0',
+            'total'             => 'nullable|numeric|min:0',
+            'keterangan'        => 'nullable|string|max:255',
+            'detail_json'       => 'nullable|array', 
         ];
     }
 }
