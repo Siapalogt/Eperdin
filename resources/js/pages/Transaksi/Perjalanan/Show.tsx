@@ -29,7 +29,7 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
 
     // ==== MANIFES PESERTA STATE ====
     const [pilihanNama, setPilihanNama] = useState<any[]>([]);
-    const { data: formPeserta, setData: setFormPeserta, post: postPeserta, processing: procPeserta, reset: resetPeserta, errors: errPeserta } = useForm({
+    const { data: formPeserta, setData: setFormPeserta, post: postPeserta, processing: procPeserta, reset: resetPeserta } = useForm({
         jenis_peserta: 'Asn',
         peserta_id: '',
         uang_harian_kustom: 0,
@@ -50,7 +50,6 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
 
     const handleTambahPeserta = (e: React.FormEvent) => {
         e.preventDefault();
-        // 💡 FIX SSR: Menggunakan URL String langsung
         postPeserta(`/perjalanan/${perjalanan.id}/peserta`, { 
             onSuccess: () => resetPeserta('peserta_id', 'uang_harian_kustom') 
         });
@@ -58,14 +57,12 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
 
     const handleDeletePeserta = (pesertaId: number) => {
         if (confirm('Apakah Anda yakin ingin mengeluarkan peserta ini dari manifes?')) {
-            // 💡 FIX SSR: Menggunakan URL String langsung
             router.delete(`/perjalanan/${perjalanan.id}/peserta/${pesertaId}`);
         }
     };
 
     const updateStatus = (newStatus: string) => {
         if (confirm(`Apakah Anda yakin ingin mengubah status SPT menjadi ${newStatus}?`)) {
-            // 💡 FIX SSR: Menggunakan URL String langsung
             router.post(`/perjalanan/${perjalanan.id}/status`, { status: newStatus });
         }
     };
@@ -73,6 +70,7 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
     // ==== MODAL BIAYA STATE ====
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activePeserta, setActivePeserta] = useState<any>(null);
+    const [dynamicFields, setDynamicFields] = useState<any[]>([]); // Menyimpan struktur field dinamis
 
     const { data: formBiaya, setData: setFormBiaya, post: postBiaya, processing: procBiaya, reset: resetBiaya } = useForm({
         komponen_biaya_id: '',
@@ -80,7 +78,8 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
         satuan: 'unit',
         harga_satuan: 0,
         total: 0,
-        keterangan: ''
+        keterangan: '',
+        detail_json: {} as Record<string, any> // Wadah untuk data inputan dinamis
     });
 
     // Kalkulasi Total otomatis
@@ -88,12 +87,45 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
         setFormBiaya('total', formBiaya.qty * formBiaya.harga_satuan);
     }, [formBiaya.qty, formBiaya.harga_satuan]);
 
+    // Handler untuk pilihan komponen berubah
+    const handleKomponenChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedId = e.target.value;
+        setFormBiaya('komponen_biaya_id', selectedId);
+        
+        // Reset JSON state ketika komponen berganti agar data tidak tercampur
+        setFormBiaya('detail_json', {});
+
+        // Asumsi relasi m_field_komponen di-load dari backend sebagai 'field_komponen'
+        const selectedKomponen = listKomponen?.find((k) => k.id.toString() === selectedId);
+        if (selectedKomponen && selectedKomponen.field_komponen) {
+            setDynamicFields(selectedKomponen.field_komponen);
+        } else {
+            setDynamicFields([]);
+        }
+    };
+
+    // Handler untuk mengisi state JSON dinamis
+    const handleDynamicFieldChange = (fieldName: string, value: any) => {
+        setFormBiaya('detail_json', {
+            ...formBiaya.detail_json,
+            [fieldName]: value
+        });
+    };
+
+    // Handler untuk input harga dengan format ribuan
+    const handleHargaSatuanChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        // Hapus semua karakter yang bukan angka menggunakan Regex
+        const rawValue = e.target.value.replace(/\D/g, '');
+        const numberValue = rawValue ? Number(rawValue) : 0;
+        setFormBiaya('harga_satuan', numberValue);
+    };
+
     const handleTambahBiaya = (e: React.FormEvent) => {
         e.preventDefault();
-        // 💡 FIX SSR: Menggunakan URL String langsung
         postBiaya(`/peserta/${activePeserta.id}/biaya`, {
             onSuccess: () => {
                 resetBiaya(); 
+                setDynamicFields([]); // Reset form dinamis
                 setIsModalOpen(false);
             }
         });
@@ -134,7 +166,6 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
                     <span>&larr;</span><span>Kembali ke Daftar</span>
                 </Link>
 
-                {/* TOMBOL EDIT TRANSAKSI DIPINDAH KE SINI */}
                 <Link 
                     href={`/perjalanan/${perjalanan.id}/edit`} 
                     className="inline-flex items-center px-4 py-2 bg-amber-400 hover:bg-amber-500 text-indigo-950 text-xs font-bold rounded-lg shadow-sm transition-colors"
@@ -224,7 +255,7 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
                                                         Biaya ({row.biaya?.length || 0})
                                                     </button>
                                                     <button onClick={() => handleDeletePeserta(row.id)} className="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white rounded-lg text-xs font-bold transition border border-rose-200">
-                                                        Keluarkan
+                                                        Keluaran
                                                     </button>
                                                 </td>
                                             </tr>
@@ -318,7 +349,12 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
                                 <form onSubmit={handleTambahBiaya} className="space-y-4">
                                     <div>
                                         <label className="block text-xs font-semibold text-slate-700 mb-1">Komponen</label>
-                                        <select className="w-full border border-slate-300 p-2 text-sm rounded-lg bg-white" value={formBiaya.komponen_biaya_id} onChange={e => setFormBiaya('komponen_biaya_id', e.target.value)} required>
+                                        <select 
+                                            className="w-full border border-slate-300 p-2 text-sm rounded-lg bg-white" 
+                                            value={formBiaya.komponen_biaya_id} 
+                                            onChange={handleKomponenChange} // 💡 Ganti dengan handler kustom
+                                            required
+                                        >
                                             <option value="" disabled>-- Pilih Jenis --</option>
                                             {listKomponen?.map(k => (
                                                 <option key={k.id} value={k.id}>{k.kelompok_biaya?.nama} - {k.nama}</option>
@@ -332,7 +368,15 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
                                         </div>
                                         <div className="col-span-2">
                                             <label className="block text-xs font-semibold text-slate-700 mb-1">Tarif Satuan (Rp)</label>
-                                            <input type="number" min="0" className="w-full border border-slate-300 p-2 text-sm rounded-lg" value={formBiaya.harga_satuan} onChange={e => setFormBiaya('harga_satuan', Number(e.target.value))} required />
+                                            {/* 💡 Input dirubah menjadi text agar mendukung pemisah ribuan */}
+                                            <input 
+                                                type="text" 
+                                                className="w-full border border-slate-300 p-2 text-sm rounded-lg" 
+                                                value={formBiaya.harga_satuan === 0 ? '' : formBiaya.harga_satuan.toLocaleString('id-ID')} 
+                                                onChange={handleHargaSatuanChange} 
+                                                placeholder="0"
+                                                required 
+                                            />
                                         </div>
                                     </div>
                                     <div>
@@ -343,8 +387,43 @@ const Show: React.FC<Props> = ({ perjalanan, masterAsn, masterDewan, masterPjlp,
                                         <label className="block text-xs font-semibold text-slate-700 mb-1">Keterangan (Opsional)</label>
                                         <input type="text" placeholder="Misal: Sesuai tagihan hotel" className="w-full border border-slate-300 p-2 text-sm rounded-lg" value={formBiaya.keterangan} onChange={e => setFormBiaya('keterangan', e.target.value)} />
                                     </div>
+
+                                    {/* 💡 PENAMBAHAN FORM DINAMIS (Muncul jika ada setting m_field_komponen) */}
+                                    {dynamicFields.length > 0 && (
+                                        <div className="bg-white border border-blue-100 p-4 rounded-lg shadow-inner space-y-3 mt-4">
+                                            <h5 className="text-xs font-extrabold text-blue-600 mb-2">Rincian Lanjutan</h5>
+                                            {dynamicFields.map((field: any) => (
+                                                <div key={field.id}>
+                                                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">{field.label_field}</label>
+                                                    {['text', 'number', 'date'].includes(field.input_type) && (
+                                                        <input
+                                                            type={field.input_type}
+                                                            onChange={(e) => handleDynamicFieldChange(field.field_name, e.target.value)}
+                                                            value={formBiaya.detail_json[field.field_name] || ''}
+                                                            className="w-full border border-slate-200 p-2 text-xs rounded-md"
+                                                            required={field.is_required}
+                                                        />
+                                                    )}
+                                                    {field.input_type === 'select' && (
+                                                        <select
+                                                            onChange={(e) => handleDynamicFieldChange(field.field_name, e.target.value)}
+                                                            value={formBiaya.detail_json[field.field_name] || ''}
+                                                            className="w-full border border-slate-200 p-2 text-xs rounded-md bg-white"
+                                                            required={field.is_required}
+                                                        >
+                                                            <option value="">-- Pilih --</option>
+                                                            {field.pilihan?.split(',').map((opsi: string, idx: number) => (
+                                                                <option key={idx} value={opsi.trim()}>{opsi.trim()}</option>
+                                                            ))}
+                                                        </select>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    {/* END FORM DINAMIS */}
                                     
-                                    <div className="pt-2 border-t border-slate-200">
+                                    <div className="pt-2 border-t border-slate-200 mt-4">
                                         <div className="flex justify-between items-center mb-3">
                                             <span className="text-xs font-bold text-slate-500">Kalkulasi Total:</span>
                                             <span className="text-sm font-black text-indigo-700">{formatRp(formBiaya.total)}</span>

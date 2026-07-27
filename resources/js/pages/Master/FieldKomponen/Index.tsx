@@ -36,7 +36,7 @@ const Index: React.FC<Props> = ({ fieldKomponen, komponenBiaya }) => {
         field_name: '',
         input_type: 'text',
         pilihan: '',
-        required: 1,
+        required: 1, // 1 = Wajib, 0 = Opsional
         urutan: 1,
         status: 'aktif',
     });
@@ -74,7 +74,7 @@ const Index: React.FC<Props> = ({ fieldKomponen, komponenBiaya }) => {
             field_name: item.field_name,
             input_type: item.input_type,
             pilihan: item.pilihan || '',
-            required: item.required === true ? 1 : (item.required === false ? 0 : item.required),
+            required: item.required === true || item.required === 1 ? 1 : 0,
             urutan: item.urutan,
             status: item.status,
         });
@@ -150,7 +150,10 @@ const Index: React.FC<Props> = ({ fieldKomponen, komponenBiaya }) => {
                                                         {item.status.toUpperCase()}
                                                     </span>
                                                     <span>•</span>
-                                                    <span>{item.required ? 'Wajib Diisi' : 'Opsional'}</span>
+                                                    {/* Menampilkan status required dengan warna agar mudah terlihat */}
+                                                    <span className={item.required ? 'text-blue-600 font-bold' : ''}>
+                                                        {item.required ? 'Wajib Diisi' : 'Opsional'}
+                                                    </span>
                                                 </div>
                                             </td>
 
@@ -314,20 +317,35 @@ const Index: React.FC<Props> = ({ fieldKomponen, komponenBiaya }) => {
                                 />
                             </div>
 
-                            {/* Status */}
+                            {/* Required (Wajib/Opsional) */}
                             <div>
                                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                                    Status <span className="text-rose-500">*</span>
+                                    Validasi Data <span className="text-rose-500">*</span>
                                 </label>
                                 <select
                                     className="w-full border border-slate-200 p-2.5 text-xs rounded-xl bg-white focus:outline-none focus:border-blue-600 transition"
-                                    value={data.status}
-                                    onChange={(e) => setData('status', e.target.value)}
+                                    value={data.required}
+                                    onChange={(e) => setData('required', Number(e.target.value))}
                                 >
-                                    <option value="aktif">Aktif</option>
-                                    <option value="nonaktif">Nonaktif</option>
+                                    <option value={1}>Wajib Diisi</option>
+                                    <option value={0}>Opsional</option>
                                 </select>
                             </div>
+                        </div>
+
+                        {/* Status */}
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1">
+                                Status <span className="text-rose-500">*</span>
+                            </label>
+                            <select
+                                className="w-full border border-slate-200 p-2.5 text-xs rounded-xl bg-white focus:outline-none focus:border-blue-600 transition"
+                                value={data.status}
+                                onChange={(e) => setData('status', e.target.value)}
+                            >
+                                <option value="aktif">Aktif</option>
+                                <option value="nonaktif">Nonaktif</option>
+                            </select>
                         </div>
 
                         {/* Action Buttons */}
