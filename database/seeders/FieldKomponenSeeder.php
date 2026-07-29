@@ -144,8 +144,7 @@ class FieldKomponenSeeder extends Seeder
                 'updated_at'        => $now,
             ],
         ];
-
-        // Hapus data lama agar tidak duplikat jika dijalankan ulang
+        
         DB::table('m_field_komponen')->truncate();
 
         DB::table('m_field_komponen')->insert($fields);

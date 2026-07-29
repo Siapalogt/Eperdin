@@ -1,12 +1,18 @@
 import { useForm, Head, router } from '@inertiajs/react';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import AppLayout from '../../../layouts/AppLayout';
 
 // ==========================================
 // DEFINISI INTERFACE TYPESCRIPT
 // ==========================================
+interface KelompokBiaya {
+    id: number;
+    nama: string;
+}
+
 interface KomponenBiaya {
     id: number;
+    kelompok_biaya_id?: number | string;
     nama: string;
 }
 
@@ -26,10 +32,19 @@ interface FieldKomponen {
 interface Props {
     fieldKomponen: FieldKomponen[];
     komponenBiaya: KomponenBiaya[];
+    kelompokBiaya?: KelompokBiaya[]; // Tambahan prop Kelompok Biaya dari Controller
 }
 
-const Index: React.FC<Props> = ({ fieldKomponen, komponenBiaya }) => {
-    // Inisialisasi form menggunakan helper Inertia
+const Index: React.FC<Props> = ({ 
+    fieldKomponen = [], 
+    komponenBiaya = [], 
+    kelompokBiaya = [] 
+}) => {
+    // 1. State lokal untuk memfilter Komponen Biaya berdasarkan Kelompok Biaya
+    const [selectedKelompokId, setSelectedKelompokId] = useState<string | number>('');
+    const [editId, setEditId] = useState<number | null>(null);
+
+    // 2. Inisialisasi form menggunakan helper Inertia
     const { data, setData, post, put, reset, processing, errors, clearErrors } = useForm({
         komponen_biaya_id: '' as string | number,
         label: '',
@@ -41,7 +56,36 @@ const Index: React.FC<Props> = ({ fieldKomponen, komponenBiaya }) => {
         status: 'aktif',
     });
 
-    const [editId, setEditId] = useState<number | null>(null);
+    // 3. Filter list Komponen Biaya secara otomatis berdasarkan Kelompok Biaya yang dipilih
+    const filteredKomponenBiaya = useMemo(() => {
+        if (!selectedKelompokId) return [];
+        return komponenBiaya.filter(
+            (k) => String(k.kelompok_biaya_id) === String(selectedKelompokId)
+        );
+    }, [selectedKelompokId, komponenBiaya]);
+
+    // Handler saat Kelompok Biaya berganti
+    const handleKelompokChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const val = e.target.value;
+        setSelectedKelompokId(val);
+        // Reset pilihan komponen_biaya_id agar konsisten
+        setData('komponen_biaya_id', '');
+    };
+
+    // Auto-generate Field Name saat Label Form diketik
+    const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const labelVal = e.target.value;
+        const autoFieldName = labelVal
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, '')
+            .replace(/\s+/g, '_');
+
+        setData((prev) => ({
+            ...prev,
+            label: labelVal,
+            field_name: editId ? prev.field_name : autoFieldName, // Auto-slug saat mode Tambah
+        }));
+    };
 
     // Fungsi Submit Form (Create & Update)
     const handleSubmit = (e: React.FormEvent) => {
@@ -51,6 +95,7 @@ const Index: React.FC<Props> = ({ fieldKomponen, komponenBiaya }) => {
             put(route('master.field-komponen.update', editId), {
                 onSuccess: () => {
                     setEditId(null);
+                    setSelectedKelompokId('');
                     reset();
                     clearErrors();
                 },
@@ -58,6 +103,8 @@ const Index: React.FC<Props> = ({ fieldKomponen, komponenBiaya }) => {
         } else {
             post(route('master.field-komponen.store'), {
                 onSuccess: () => {
+                    setEditId(null);
+                    setSelectedKelompokId('');
                     reset();
                     clearErrors();
                 },
@@ -68,6 +115,18 @@ const Index: React.FC<Props> = ({ fieldKomponen, komponenBiaya }) => {
     // Fungsi untuk mengisi form saat tombol Edit diklik
     const handleEdit = (item: FieldKomponen) => {
         setEditId(item.id);
+
+        // Cari komponen induk untuk mengidentifikasi kelompok_biaya_id nya secara otomatis
+        const targetKomponen = komponenBiaya.find(
+            (k) => String(k.id) === String(item.komponen_biaya_id)
+        );
+
+        if (targetKomponen && targetKomponen.kelompok_biaya_id) {
+            setSelectedKelompokId(targetKomponen.kelompok_biaya_id);
+        } else {
+            setSelectedKelompokId('');
+        }
+
         setData({
             komponen_biaya_id: item.komponen_biaya_id.toString(),
             label: item.label,
@@ -91,6 +150,7 @@ const Index: React.FC<Props> = ({ fieldKomponen, komponenBiaya }) => {
     // Fungsi untuk membatalkan edit
     const handleCancel = () => {
         setEditId(null);
+        setSelectedKelompokId('');
         reset();
         clearErrors();
     };
@@ -150,7 +210,6 @@ const Index: React.FC<Props> = ({ fieldKomponen, komponenBiaya }) => {
                                                         {item.status.toUpperCase()}
                                                     </span>
                                                     <span>•</span>
-                                                    {/* Menampilkan status required dengan warna agar mudah terlihat */}
                                                     <span className={item.required ? 'text-blue-600 font-bold' : ''}>
                                                         {item.required ? 'Wajib Diisi' : 'Opsional'}
                                                     </span>
@@ -212,19 +271,44 @@ const Index: React.FC<Props> = ({ fieldKomponen, komponenBiaya }) => {
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         
-                        {/* Komponen Induk */}
+                        {/* STEP 1: Pilih Kelompok Biaya (TAMBAHAN UTAMA) */}
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1">
+                                Kelompok Biaya <span className="text-rose-500">*</span>
+                            </label>
+                            <select
+                                className="w-full border border-slate-200 p-2.5 text-xs rounded-xl bg-slate-50/50 focus:bg-white focus:outline-none focus:border-blue-600 transition"
+                                value={selectedKelompokId}
+                                onChange={handleKelompokChange}
+                                required
+                            >
+                                <option value="">-- Pilih Kelompok Biaya --</option>
+                                {kelompokBiaya.map((k) => (
+                                    <option key={k.id} value={k.id}>
+                                        {k.nama}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* STEP 2: Komponen Induk (Filtered) */}
                         <div>
                             <label className="block text-xs font-semibold text-slate-700 mb-1">
                                 Komponen Induk <span className="text-rose-500">*</span>
                             </label>
                             <select
-                                className="w-full border border-slate-200 p-2.5 text-xs rounded-xl bg-white focus:outline-none focus:border-blue-600 transition"
+                                className="w-full border border-slate-200 p-2.5 text-xs rounded-xl bg-white focus:outline-none focus:border-blue-600 transition disabled:bg-slate-100 disabled:cursor-not-allowed"
                                 value={data.komponen_biaya_id}
                                 onChange={(e) => setData('komponen_biaya_id', e.target.value)}
+                                disabled={!selectedKelompokId}
                                 required
                             >
-                                <option value="" disabled>-- Pilih Komponen --</option>
-                                {komponenBiaya.map((k) => (
+                                <option value="" disabled>
+                                    {!selectedKelompokId 
+                                        ? '-- Pilih Kelompok Biaya Dahulu --' 
+                                        : '-- Pilih Komponen --'}
+                                </option>
+                                {filteredKomponenBiaya.map((k) => (
                                     <option key={k.id} value={k.id}>{k.nama}</option>
                                 ))}
                             </select>
@@ -243,7 +327,7 @@ const Index: React.FC<Props> = ({ fieldKomponen, komponenBiaya }) => {
                                 className="w-full border border-slate-200 p-2.5 text-xs rounded-xl focus:outline-none focus:border-blue-600 transition"
                                 placeholder="Misal: Nama Hotel / Maskapai"
                                 value={data.label}
-                                onChange={(e) => setData('label', e.target.value)}
+                                onChange={handleLabelChange}
                                 required
                             />
                             {errors.label && <p className="text-rose-500 text-[10px] mt-1">{errors.label}</p>}

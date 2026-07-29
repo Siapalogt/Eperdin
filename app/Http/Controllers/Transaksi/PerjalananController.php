@@ -7,12 +7,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaksi\StorePerjalananRequest;
 use App\Models\Master\AnggotaDewan;
 use App\Models\Master\Asn;
+use App\Models\Master\Kategori;
+use App\Models\Master\KelompokBiaya; // 👈 1. Ditambahkan Import KelompokBiaya
 use App\Models\Master\KomponenBiaya;
 use App\Models\Master\Pjlp;
 use App\Models\Master\TemplatePerjalanan;
 use App\Models\Master\TenagaAhli;
 use App\Models\Transaksi\Perjalanan;
-use App\Models\Master\Kategori;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -50,19 +51,27 @@ class PerjalananController extends Controller
 
     public function show(Perjalanan $perjalanan)
     {
-        // 💡 PERBAIKAN FATAL: Memanggil relasi 'biaya' sesuai dengan yang ada di Model Peserta.php
         $perjalanan->load([
             'peserta.detail_peserta',
             'peserta.biaya.komponen_biaya',
         ]);
 
-        return Inertia::render('Transaksi/Perjalanan/Show', [
+        // 1. Ambil Kelompok Biaya Aktif
+        $kelompokBiaya = KelompokBiaya::where('status', 'aktif')->orderBy('nama', 'asc')->get();
+
+        // 2. Ambil Komponen Biaya beserta Field Dinamisnya (Gunakan snake_case sesuai Model Anda)
+        $listKomponen = KomponenBiaya::with(['kelompok_biaya', 'field_komponen' => function($q) {
+            $q->where('status', 'aktif')->orderBy('urutan', 'asc');
+        }])->where('status', 'aktif')->get();
+
+        return Inertia::render('Transaksi/Perjalanan/Detail/Index', [
             'perjalanan' => $perjalanan,
             'masterAsn' => Asn::where('status', 'Aktif')->get(),
             'masterDewan' => AnggotaDewan::where('status', 'Aktif')->get(),
             'masterPjlp' => Pjlp::where('status', 'Aktif')->get(),
             'masterTa' => TenagaAhli::where('status', 'Aktif')->get(),
-            'listKomponen' => KomponenBiaya::with('kelompok_biaya')->orderBy('nama')->get(),
+            'listKomponen' => $listKomponen,
+            'kelompokBiaya' => $kelompokBiaya,
         ]);
     }
 
