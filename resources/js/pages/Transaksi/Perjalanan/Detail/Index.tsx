@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '../../../../layouts/AppLayout';
 import DetailPerjalananCard from './components/DetailPerjalananCard';
-import StatusWorkflowCard from './components/StatusWorkFlowCard';
+import StatusWorkflowCard from './components/StatusWorkflowCard';
 import FormTambahPeserta from './components/FormTambahPeserta';
 import PesertaManifestTable from './components/PesertaManifestTable';
 import ModalBiayaPeserta from './components/ModalBiayaPeserta';

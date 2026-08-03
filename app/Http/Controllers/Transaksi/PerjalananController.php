@@ -25,7 +25,7 @@ class PerjalananController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return Inertia::render('Transaksi/Perjalanan/Index', [
+        return Inertia::render('Transaksi/Perjalanan/Index/Index', [
             'listPerjalanan' => $perjalanan,
         ]);
     }
@@ -35,7 +35,7 @@ class PerjalananController extends Controller
         $templates = TemplatePerjalanan::where('status', 'Aktif')->get();
         $kategoris = Kategori::all();
 
-        return Inertia::render('Transaksi/Perjalanan/Create', [
+        return Inertia::render('Transaksi/Perjalanan/Create/Index', [
             'templates' => $templates,
             'kategoris' => $kategoris,
         ]);
@@ -56,10 +56,8 @@ class PerjalananController extends Controller
             'peserta.biaya.komponen_biaya',
         ]);
 
-        // 1. Ambil Kelompok Biaya Aktif
         $kelompokBiaya = KelompokBiaya::where('status', 'aktif')->orderBy('nama', 'asc')->get();
 
-        // 2. Ambil Komponen Biaya beserta Field Dinamisnya (Gunakan snake_case sesuai Model Anda)
         $listKomponen = KomponenBiaya::with(['kelompok_biaya', 'field_komponen' => function($q) {
             $q->where('status', 'aktif')->orderBy('urutan', 'asc');
         }])->where('status', 'aktif')->get();
@@ -100,8 +98,9 @@ class PerjalananController extends Controller
     {
         $perjalanan = Perjalanan::findOrFail($id);
 
-        return Inertia::render('Transaksi/Perjalanan/Edit', [
+        return Inertia::render('Transaksi/Perjalanan/Edit/Index', [
             'perjalanan' => $perjalanan,
+            'kategoris'  => Kategori::all(),
         ]);
     }
 
