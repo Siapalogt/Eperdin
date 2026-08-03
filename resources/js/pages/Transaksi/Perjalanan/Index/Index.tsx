@@ -55,7 +55,6 @@ export default function Index({ listPerjalanan }: IndexProps) {
                     doneCount={doneCount}
                 />
 
-                {/* Tabel Data & Pencarian */}
                 <PerjalananTable
                     listPerjalanan={listPerjalanan}
                     onDelete={handleDelete}
