@@ -134,14 +134,18 @@ const Index: React.FC<Props> = ({ listTa, listDewan }) => {
                                             </td>
                                             <td className="px-6 py-4 text-center space-x-3">
                                                 <button
-                                                    onClick={() => handleEdit(item)}
-                                                    className="text-indigo-600 hover:text-indigo-900 font-bold hover:underline transition"
+                                                    onClick={() =>
+                                                        handleEdit(item)
+                                                    }
+                                                    className="text-xs font-bold text-indigo-600 transition hover:text-indigo-900 hover:underline"
                                                 >
                                                     Edit
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDelete(item.id)}
-                                                    className="text-rose-600 hover:text-rose-900 font-bold hover:underline transition"
+                                                    onClick={() =>
+                                                        handleDelete(item.id)
+                                                    }
+                                                    className="text-xs font-bold text-rose-600 transition hover:text-rose-900 hover:underline"
                                                 >
                                                     Hapus
                                                 </button>
@@ -260,7 +264,11 @@ const Index: React.FC<Props> = ({ listTa, listDewan }) => {
                                 disabled={processing}
                                 className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition disabled:opacity-50"
                             >
-                                {processing ? 'Menyimpan...' : editId ? 'Simpan Perubahan' : 'Tambah TA'}
+                                {processing
+                                    ? 'Menyimpan...'
+                                    : editId
+                                        ? 'Simpan Perubahan'
+                                        : 'Tambah TA'}
                             </button>
                             {editId && (
                                 <button
