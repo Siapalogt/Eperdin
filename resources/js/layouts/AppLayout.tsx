@@ -11,11 +11,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
 
     const currentPath = window.location.pathname;
 
-
     const [isBiayaOpen, setIsBiayaOpen] = useState(
         currentPath.startsWith('/master/kelompok-biaya') || 
         currentPath.startsWith('/master/komponen-biaya') ||
-        currentPath.startsWith('/master/field-komponen')
+        currentPath.startsWith('/master/field-komponen') ||
+        currentPath.startsWith('/master/satuan') // 👈 Tambahan rule untuk satuan
     );
     const [isTemplateOpen, setIsTemplateOpen] = useState(
         currentPath.startsWith('/master/template')
@@ -99,7 +99,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
         <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans">
             {/* Sidebar - Desktop */}
             <aside 
-                className="hidden md:flex flex-col w-64 text-white shrink-0 shadow-xl border-r border-indigo-900/30"
+                className="hidden md:flex flex-col w-64 text-white shrink-0 shadow-xl border-r border-indigo-900/30 z-20"
                 style={{ backgroundColor: '#1a237e' }}
             >
                 {/* Brand Logo & Name */}
@@ -213,8 +213,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
-                                {/* max-h-60 dirubah agar muat untuk 3 list menu */}
-                                <div className={`overflow-hidden transition-all duration-300 ease-in-out flex flex-col space-y-1 ${isBiayaOpen ? 'max-h-60 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
+                                {/* max-h-72 untuk muat 4 list menu */}
+                                <div className={`overflow-hidden transition-all duration-300 ease-in-out flex flex-col space-y-1 ${isBiayaOpen ? 'max-h-72 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
                                     <Link
                                         href="/master/kelompok-biaya"
                                         className={`flex items-center space-x-3 pl-11 pr-3 py-2 rounded-xl text-sm font-medium transition duration-200 ${
@@ -226,7 +226,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                         </svg>
-                                        <span>Master Kelompok Biaya</span>
+                                        <span>Kelompok Biaya</span>
                                     </Link>
                                     
                                     <Link
@@ -240,10 +240,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
-                                        <span>Master Komponen Biaya</span>
+                                        <span>Komponen Biaya</span>
                                     </Link>
 
-                                    {/* MENU BARU DITAMBAHKAN DI SINI */}
                                     <Link
                                         href="/master/field-komponen"
                                         className={`flex items-center space-x-3 pl-11 pr-3 py-2 rounded-xl text-sm font-medium transition duration-200 ${
@@ -255,7 +254,22 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                                         </svg>
-                                        <span>Master Rincian Biaya</span>
+                                        <span>Rincian Biaya</span>
+                                    </Link>
+
+                                    {/* 💡 MENU BARU: Master Satuan */}
+                                    <Link
+                                        href="/master/satuan"
+                                        className={`flex items-center space-x-3 pl-11 pr-3 py-2 rounded-xl text-sm font-medium transition duration-200 ${
+                                            isLinkActive('/master/satuan')
+                                                ? 'bg-indigo-700/55 text-white shadow-inner border-l-4 border-amber-400'
+                                                : 'text-indigo-300 hover:bg-indigo-900/30 hover:text-white'
+                                        }`}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                        </svg>
+                                        <span>Master Satuan</span>
                                     </Link>
                                 </div>
                             </li>
@@ -270,7 +284,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
             </aside>    
 
             {/* Mobile Header */}
-            <header className="md:hidden flex items-center justify-between px-6 py-4 bg-indigo-950 text-white shadow-md">
+            <header className="md:hidden flex items-center justify-between px-6 py-4 bg-indigo-950 text-white shadow-md z-10 relative">
                 <div className="flex items-center space-x-2">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-400 to-yellow-300 flex items-center justify-center text-indigo-950 font-bold text-md">
                         D
@@ -394,8 +408,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                             </svg>
                                         </button>
-                                        {/* max-h-48 untuk mengakomodasi 3 menu di mobile */}
-                                        <div className={`overflow-hidden transition-all duration-300 ease-in-out flex flex-col space-y-1 ${isBiayaOpen ? 'max-h-48 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
+                                        {/* max-h-64 untuk 4 menu di mobile */}
+                                        <div className={`overflow-hidden transition-all duration-300 ease-in-out flex flex-col space-y-1 ${isBiayaOpen ? 'max-h-64 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
                                             <Link
                                                 href="/master/kelompok-biaya"
                                                 onClick={() => setIsMobileMenuOpen(false)}
@@ -406,7 +420,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                                 </svg>
-                                                <span>Master Kelompok Biaya</span>
+                                                <span>Kelompok Biaya</span>
                                             </Link>
                                             
                                             <Link
@@ -419,10 +433,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
-                                                <span>Master Komponen Biaya</span>
+                                                <span>Komponen Biaya</span>
                                             </Link>
 
-                                            {/* MENU BARU DITAMBAHKAN DI SINI */}
                                             <Link
                                                 href="/master/field-komponen"
                                                 onClick={() => setIsMobileMenuOpen(false)}
@@ -433,7 +446,21 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, title }) => {
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                                                 </svg>
-                                                <span>Master Rincian Biaya</span>
+                                                <span>Rincian Biaya</span>
+                                            </Link>
+
+                                            {/* 💡 MENU BARU: Master Satuan (Mobile) */}
+                                            <Link
+                                                href="/master/satuan"
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className={`flex items-center space-x-3 pl-10 pr-3 py-2 rounded-lg text-sm transition ${
+                                                    isLinkActive('/master/satuan') ? 'bg-indigo-700/55 text-white' : 'text-indigo-300 hover:bg-indigo-800/30'
+                                                }`}
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                                </svg>
+                                                <span>Master Satuan</span>
                                             </Link>
                                         </div>
                                     </li>

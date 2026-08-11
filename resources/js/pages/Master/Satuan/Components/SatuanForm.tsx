@@ -1,46 +1,41 @@
 import React, { useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
-import { KelompokItem } from './KelompokBiayaTable';
+import { SatuanItem } from './SatuanTable';
 
-interface KelompokBiayaFormProps {
-    selectedKelompok: KelompokItem | null;
+interface SatuanFormProps {
+    selectedSatuan: SatuanItem | null;
     onCancelEdit: () => void;
 }
 
-export const KelompokBiayaForm: React.FC<KelompokBiayaFormProps> = ({
-    selectedKelompok,
+export const SatuanForm: React.FC<SatuanFormProps> = ({
+    selectedSatuan,
     onCancelEdit,
 }) => {
-    // 💡 Inisialisasi kode di state form
     const { data, setData, post, put, reset, processing, errors, clearErrors } = useForm({
-        kode: '',
         nama: '',
     });
 
     useEffect(() => {
         clearErrors();
-        if (selectedKelompok) {
-            setData({
-                kode: selectedKelompok.kode || '',
-                nama: selectedKelompok.nama || '',
-            });
+        if (selectedSatuan) {
+            setData('nama', selectedSatuan.nama);
         } else {
             reset();
         }
-    }, [selectedKelompok]);
+    }, [selectedSatuan]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (selectedKelompok) {
-            put(route('master.kelompok-biaya.update', selectedKelompok.id), {
+        if (selectedSatuan) {
+            put(route('master.satuan.update', selectedSatuan.id), {
                 onSuccess: () => {
                     onCancelEdit();
                     reset();
                 },
             });
         } else {
-            post(route('master.kelompok-biaya.store'), {
+            post(route('master.satuan.store'), {
                 onSuccess: () => {
                     reset();
                     clearErrors();
@@ -53,43 +48,24 @@ export const KelompokBiayaForm: React.FC<KelompokBiayaFormProps> = ({
         <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm h-fit space-y-5 sticky top-24">
             <div className="border-b border-slate-100 pb-3">
                 <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">
-                    {selectedKelompok ? 'Ubah Kelompok Biaya' : 'Tambah Kelompok Biaya'}
+                    {selectedSatuan ? 'Ubah Satuan' : 'Tambah Satuan'}
                 </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
-                    {selectedKelompok
-                        ? 'Ubah data kategori pengelompokan yang sudah ada.'
-                        : 'Masukkan kode & nama kategori pengelompokan baru.'}
+                    {selectedSatuan
+                        ? 'Ubah data nama satuan yang sudah ada.'
+                        : 'Masukkan nama satuan biaya baru (misal: Hari, Paket, Unit).'}
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                {/* 💡 Input Kode Kelompok */}
                 <div>
                     <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                        Kode Kelompok <span className="text-rose-500">*</span>
+                        Nama Satuan <span className="text-rose-500">*</span>
                     </label>
                     <input
                         type="text"
                         required
-                        placeholder="Contoh: K-01"
-                        className="w-full border border-slate-300 p-2.5 text-xs rounded-xl focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition font-medium text-slate-800"
-                        value={data.kode}
-                        onChange={(e) => setData('kode', e.target.value)}
-                    />
-                    {errors.kode && (
-                        <p className="text-rose-500 text-[11px] mt-1 font-semibold">{errors.kode}</p>
-                    )}
-                </div>
-
-                {/* Nama Kelompok */}
-                <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                        Nama Kelompok <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        required
-                        placeholder="Contoh: Biaya Transportasi"
+                        placeholder="Contoh: Malam"
                         className="w-full border border-slate-300 p-2.5 text-xs rounded-xl focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition font-medium text-slate-800"
                         value={data.nama}
                         onChange={(e) => setData('nama', e.target.value)}
@@ -99,7 +75,6 @@ export const KelompokBiayaForm: React.FC<KelompokBiayaFormProps> = ({
                     )}
                 </div>
 
-                {/* Tombol Aksi */}
                 <div className="flex space-x-2 pt-3 border-t border-slate-100">
                     <button
                         type="submit"
@@ -108,12 +83,12 @@ export const KelompokBiayaForm: React.FC<KelompokBiayaFormProps> = ({
                     >
                         {processing
                             ? 'Menyimpan...'
-                            : selectedKelompok
+                            : selectedSatuan
                             ? 'Simpan Perubahan'
                             : 'Tambah Data'}
                     </button>
 
-                    {selectedKelompok && (
+                    {selectedSatuan && (
                         <button
                             type="button"
                             onClick={onCancelEdit}

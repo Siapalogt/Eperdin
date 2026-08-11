@@ -14,7 +14,8 @@ interface Props {
     masterPjlp: any[];
     masterTa: any[];
     listKomponen: any[];
-    kelompokBiaya?: any[]; // Prop konsisten nama 'kelompokBiaya'
+    kelompokBiaya?: any[]; 
+    listSatuan: any[];
 }
 
 const Index: React.FC<Props> = ({ 
@@ -24,7 +25,8 @@ const Index: React.FC<Props> = ({
     masterPjlp, 
     masterTa, 
     listKomponen,
-    kelompokBiaya
+    kelompokBiaya,
+    listSatuan
 }) => {
     // State Modal Biaya
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -83,7 +85,7 @@ const Index: React.FC<Props> = ({
                 <PesertaManifestTable 
                     perjalananId={perjalanan.id} 
                     pesertaList={perjalanan?.peserta} 
-                    onOpenBiayaModal={openBiayaModal} 
+                    onOpenBiayaModal={openBiayaModal}
                     formatRp={formatRp} 
                 />
 
@@ -111,6 +113,7 @@ const Index: React.FC<Props> = ({
                 activePeserta={activePeserta} 
                 listKomponen={listKomponen} 
                 kelompokBiaya={kelompokBiaya} 
+                listSatuan={listSatuan}
                 formatRp={formatRp} 
             />
         </AppLayout>

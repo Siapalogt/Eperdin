@@ -4,7 +4,7 @@ import { router } from '@inertiajs/react';
 interface Props {
     perjalananId: number;
     pesertaList: any[];
-    biayaBersamaList?: any[]; // Tambahkan prop ini untuk data biaya bersama nantinya
+    biayaBersamaList?: any[]; 
     onOpenBiayaModal: (peserta: any) => void;
     formatRp: (angka: number) => string;
 }
@@ -12,7 +12,7 @@ interface Props {
 export default function PesertaManifestTable({ 
     perjalananId, 
     pesertaList = [], 
-    biayaBersamaList = [], 
+    biayaBersamaList = [],  
     onOpenBiayaModal, 
     formatRp 
 }: Props) {

@@ -19,7 +19,7 @@ use App\Http\Controllers\Master\KategoriController;
 use App\Http\Controllers\Master\FieldKomponenController;
 use App\Http\Controllers\Master\TemplatePerjalananController;
 use App\Http\Controllers\Master\TemplateDetailController;
-
+use App\Http\Controllers\Master\SatuanController;
 // Controller Transaksi
 use App\Http\Controllers\Transaksi\PerjalananController;
 use App\Http\Controllers\Transaksi\PesertaController;
@@ -39,6 +39,7 @@ use App\Models\Master\TemplatePerjalanan;
 use App\Models\Transaksi\Perjalanan;
 use App\Models\Transaksi\Peserta;
 use App\Models\Transaksi\BiayaPeserta;
+use App\Models\Master\Satuan;
 
 // ==========================================
 // RUTE PUBLIK (Hanya bisa diakses jika BELUM login)
@@ -88,11 +89,13 @@ Route::middleware('auth')->group(function () {
         Route::resource('komponen-biaya', KomponenBiayaController::class);
         Route::resource('kategori', KategoriController::class)->except(['create', 'show', 'edit']);
         Route::resource('field-komponen', FieldKomponenController::class)->except(['create', 'show', 'edit']);
-        
-        // Template Perjalanan
         Route::resource('template', TemplatePerjalananController::class);
         Route::post('template/{template}/detail', [TemplateDetailController::class, 'store']);
         Route::delete('template/{template}/detail/{detail}', [TemplateDetailController::class, 'destroy']);
+        Route::get('/satuan', [SatuanController::class, 'index'])->name('satuan.index');
+        Route::post('/satuan', [SatuanController::class, 'store'])->name('satuan.store');
+        Route::put('/satuan/{satuan}', [SatuanController::class, 'update'])->name('satuan.update');
+        Route::delete('/satuan/{satuan}', [SatuanController::class, 'destroy'])->name('satuan.destroy');
     });
 
     // 4. Rute Transaksi Perjalanan

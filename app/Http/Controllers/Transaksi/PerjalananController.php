@@ -14,6 +14,7 @@ use App\Models\Master\Pjlp;
 use App\Models\Master\TemplatePerjalanan;
 use App\Models\Master\TenagaAhli;
 use App\Models\Transaksi\Perjalanan;
+use App\Models\Master\Satuan;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -73,6 +74,7 @@ class PerjalananController extends Controller
         $listKomponen = KomponenBiaya::with(['kelompok_biaya', 'field_komponen' => function($q) {
             $q->where('status', 'aktif')->orderBy('urutan', 'asc');
         }])->where('status', 'aktif')->get();
+        $listSatuan = Satuan::orderBy('nama', 'asc')->get();
 
         return Inertia::render('Transaksi/Perjalanan/Detail/Index', [
             'perjalanan' => $perjalanan,
@@ -82,6 +84,7 @@ class PerjalananController extends Controller
             'masterTa' => TenagaAhli::where('status', 'Aktif')->get(),
             'listKomponen' => $listKomponen,
             'kelompokBiaya' => $kelompokBiaya,
+            'listSatuan' => $listSatuan,
         ]);
     }
 

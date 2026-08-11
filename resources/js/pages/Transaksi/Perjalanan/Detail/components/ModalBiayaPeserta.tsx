@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, router } from '@inertiajs/react';
 
-
 interface Props {
     isOpen: boolean;
     onClose: () => void;
     activePeserta: any;
     listKomponen: any[];
     kelompokBiaya?: any[];
+    listSatuan?: any[]; 
     formatRp: (angka: number) => string;
 }
 
@@ -17,6 +17,7 @@ export default function ModalBiayaPeserta({
     activePeserta, 
     listKomponen = [], 
     kelompokBiaya = [],
+    listSatuan = [], // 👈 2. Tangkap prop listSatuan
     formatRp 
 }: Props) {
     const [selectedKelompokId, setSelectedKelompokId] = useState<string | number>('');
@@ -25,7 +26,7 @@ export default function ModalBiayaPeserta({
     const { data, setData, post, processing, reset, clearErrors } = useForm({
         komponen_biaya_id: '',
         qty: 1,
-        satuan: 'unit',
+        satuan: '', // 👈 3. Ubah default 'unit' menjadi string kosong agar user wajib memilih
         harga_satuan: 0,
         total: 0,
         keterangan: '',
@@ -193,17 +194,24 @@ export default function ModalBiayaPeserta({
                                 </div>
                             </div>
 
+                            {/* 👈 4. Ubah Input Text menjadi Select / Dropdown */}
                             <div>
-                                <label className="block text-xs font-bold text-slate-700 mb-1.5">Satuan</label>
-                                <input 
-                                    type="text" placeholder="Misal: unit, hari, malam" 
-                                    className="w-full border border-slate-300 px-3 py-2.5 text-xs rounded-xl focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 font-medium text-slate-800 bg-slate-50/50" 
+                                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                                    Satuan <span className="text-rose-500">*</span>
+                                </label>
+                                <select 
+                                    className="w-full border border-slate-300 px-3 py-2.5 text-xs rounded-xl focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 font-medium text-slate-800 bg-slate-50/50 cursor-pointer" 
                                     value={data.satuan} 
-                                    onChange={(e) => setData('satuan', e.target.value)} 
-                                />
+                                    onChange={(e) => setData('satuan', e.target.value)}
+                                    required
+                                >
+                                    <option value="" disabled>-- Pilih Satuan --</option>
+                                    {listSatuan.map((sat: any) => (
+                                        <option key={sat.id} value={sat.nama}>{sat.nama}</option>
+                                    ))}
+                                </select>
                             </div>
 
-                            {/* UX FIX: Ubah Input menjadi Textarea agar lebih enak diketik */}
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 mb-1.5">Keterangan (Opsional)</label>
                                 <textarea 
@@ -222,7 +230,6 @@ export default function ModalBiayaPeserta({
                                     
                                     {dynamicFields.map((field: any) => {
                                         const isReq = field.required === true || field.required === 1 || field.is_required === true || field.is_required === 1;
-                                        // Format label menjadi Title Case
                                         const labelText = field.label_field || formatLabel(field.field_name);
 
                                         return (
@@ -231,7 +238,6 @@ export default function ModalBiayaPeserta({
                                                     {labelText} {isReq && <span className="text-rose-500">*</span>}
                                                 </label>
                                                 
-                                                {/* UX FIX: Render Select / Dropdown jika tipenya select */}
                                                 {field.input_type === 'select' ? (
                                                     <select
                                                         onChange={(e) => handleDynamicFieldChange(field.field_name, e.target.value)}
@@ -308,7 +314,6 @@ export default function ModalBiayaPeserta({
                                                     {formatRp(b.total)}
                                                 </td>
                                                 <td className="px-5 py-3 text-center">
-                                                    {/* UX FIX: Tombol hapus sekarang permanen terlihat dengan warna abu-abu (bg-slate-100) dan berubah merah saat hover */}
                                                     <button 
                                                         onClick={() => handleDeleteBiaya(b.id)}
                                                         className="text-slate-400 bg-slate-100 hover:text-rose-600 hover:bg-rose-100 transition p-1.5 rounded-lg inline-flex items-center justify-center"
