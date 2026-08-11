@@ -16,11 +16,12 @@ interface Kategori {
 interface Props {
     templates: Template[];
     kategoris: Kategori[];
+    defaultNomor: string; 
 }
 
-export default function Create({ templates, kategoris }: Props) {
+export default function Create({ templates, kategoris, defaultNomor }: Props) {
     const { data, setData, post, processing, errors } = useForm({
-        nomor: '',
+        nomor: defaultNomor || '',
         template_perjalanan_id: '',
         nama_kegiatan: '',
         kategori_id: '',
@@ -93,6 +94,7 @@ export default function Create({ templates, kategoris }: Props) {
                                 <input
                                     type="text"
                                     required
+                                    readOnly
                                     value={data.nomor}
                                     onChange={e => setData('nomor', e.target.value)}
                                     placeholder="Contoh: 001/SPPD/DPRD/2026"

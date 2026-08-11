@@ -34,10 +34,21 @@ class PerjalananController extends Controller
     {
         $templates = TemplatePerjalanan::where('status', 'Aktif')->get();
         $kategoris = Kategori::all();
+        $bulanAngka = date('n');
+        $tahun = date('Y');
+        $romawi = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+        $bulanRomawi = $romawi[$bulanAngka];
+        $jumlahSuratBulanIni = Perjalanan::whereYear('created_at', $tahun)
+                                         ->whereMonth('created_at', $bulanAngka)
+                                         ->count();
+        $urutanSelanjutnya = str_pad($jumlahSuratBulanIni + 1, 3, '0', STR_PAD_LEFT);
+        $autoNomor = "{$urutanSelanjutnya}/{$bulanRomawi}/{$tahun}";
+
 
         return Inertia::render('Transaksi/Perjalanan/Create/Index', [
             'templates' => $templates,
             'kategoris' => $kategoris,
+            'defaultNomor' => $autoNomor,
         ]);
     }
 
