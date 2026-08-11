@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 
 export interface KelompokItem {
     id: number;
@@ -28,17 +28,77 @@ export const KomponenBiayaTable: React.FC<KomponenBiayaTableProps> = ({
     onEdit,
     onDelete,
 }) => {
+ 
+    const [filterKelompokId, setFilterKelompokId] = useState<string>('');
+    const [searchQuery, setSearchQuery] = useState<string>('');
+
+    const availableKelompok = useMemo(() => {
+        const map = new Map();
+        listKomponen.forEach((k) => {
+            if (k.kelompok_biaya) {
+                map.set(k.kelompok_biaya.id, k.kelompok_biaya);
+            }
+        });
+        return Array.from(map.values()).sort((a, b) => a.nama.localeCompare(b.nama));
+    }, [listKomponen]);
+
+
+    const filteredKomponen = useMemo(() => {
+        return listKomponen.filter((item) => {
+        
+            const matchKelompok = filterKelompokId === '' || String(item.kelompok_biaya_id) === filterKelompokId;
+    
+            const matchSearch = item.nama.toLowerCase().includes(searchQuery.toLowerCase());
+            
+            return matchKelompok && matchSearch;
+        });
+    }, [listKomponen, filterKelompokId, searchQuery]);
+
     return (
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
-            {/* Header Tabel */}
-            <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            
+            {/* Header Tabel & Area Filter */}
+            <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
                 <div>
                     <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">
                         Daftar Rincian Komponen
                     </h2>
                     <p className="text-xs text-slate-400 mt-0.5">
-                        Total terdaftar: <strong className="text-slate-700">{listKomponen.length}</strong> komponen
+                        Menampilkan <strong className="text-indigo-600">{filteredKomponen.length}</strong> dari total <strong className="text-slate-700">{listKomponen.length}</strong> komponen
                     </p>
+                </div>
+
+                {/* Filter Controls */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                    {/* Dropdown Filter Grup */}
+                    <select
+                        className="border border-slate-300 px-3 py-2 text-xs rounded-xl focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 font-medium text-slate-700 bg-white min-w-[180px] cursor-pointer"
+                        value={filterKelompokId}
+                        onChange={(e) => setFilterKelompokId(e.target.value)}
+                    >
+                        <option value="">-- Semua Grup Induk --</option>
+                        {availableKelompok.map((kel) => (
+                            <option key={kel.id} value={kel.id}>
+                                {kel.nama}
+                            </option>
+                        ))}
+                    </select>
+
+                    {/* Search Input */}
+                    <div className="relative">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </span>
+                        <input
+                            type="text"
+                            placeholder="Cari nama komponen..."
+                            className="pl-9 pr-4 py-2 border border-slate-300 text-xs rounded-xl w-full sm:w-56 focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 transition font-medium text-slate-800"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -49,18 +109,20 @@ export const KomponenBiayaTable: React.FC<KomponenBiayaTableProps> = ({
                         <tr>
                             <th className="px-5 py-3.5 text-left">Grup Induk</th>
                             <th className="px-5 py-3.5 text-left">Nama Komponen</th>
-                            <th className="w-28 px-5 py-3.5 text-center">Aksi</th>
+                            <th className="w-32 px-5 py-3.5 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-700 bg-white">
-                        {listKomponen.length === 0 ? (
+                        {filteredKomponen.length === 0 ? (
                             <tr>
                                 <td colSpan={3} className="px-6 py-12 text-center text-slate-400 italic">
-                                    Belum ada rincian komponen biaya yang didaftarkan.
+                                    {listKomponen.length === 0 
+                                        ? "Belum ada rincian komponen biaya yang didaftarkan."
+                                        : "Tidak ada komponen yang cocok dengan filter pencarian."}
                                 </td>
                             </tr>
                         ) : (
-                            listKomponen.map((item) => {
+                            filteredKomponen.map((item) => {
                                 const isSelected = activeEditId === item.id;
                                 return (
                                     <tr
