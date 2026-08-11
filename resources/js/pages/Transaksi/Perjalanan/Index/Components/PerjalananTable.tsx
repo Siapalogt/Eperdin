@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 
+
 export interface Perjalanan {
     id: number;
     nomor: string;

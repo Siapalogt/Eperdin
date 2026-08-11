@@ -45,9 +45,14 @@ export default function Create({ templates, kategoris }: Props) {
     }, [data.tanggal_berangkat, data.tanggal_pulang]);
 
     const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        post(route('perjalanan.store'));
-    };
+    e.preventDefault();
+    post(route('perjalanan.store'), {
+        onError: (err) => {
+            console.log('Detail Validasi Error dari Laravel:', err);
+        },
+    });
+};
+    
 
     return (
         <AppLayout title="Buat Usulan Perjalanan Dinas">
