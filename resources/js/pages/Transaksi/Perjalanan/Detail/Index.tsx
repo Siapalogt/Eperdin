@@ -28,7 +28,7 @@ const Index: React.FC<Props> = ({
 }) => {
     // State Modal Biaya
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [activePeserta, setActivePeserta] = useState<any>(null);
+    const [activePesertaId, setActivePesertaId] = useState<any>(null);
 
     // Guard Clause untuk Data Perjalanan Null
     if (!perjalanan) {
@@ -46,9 +46,12 @@ const Index: React.FC<Props> = ({
     }
 
     const openBiayaModal = (peserta: any) => {
-        setActivePeserta(peserta);
+        setActivePesertaId(peserta.id);
         setIsModalOpen(true);
     };
+
+    const activePeserta = perjalanan?.peserta?.find((p: any) => p.id === activePesertaId) || null;
+    
 
     const formatRp = (angka: number) => 
         new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka || 0);

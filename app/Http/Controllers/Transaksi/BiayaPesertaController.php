@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaksi\StoreBiayaPesertaRequest;
 use App\Domains\Perjalanan\Action\SaveBiayaPesertaAction;
 use App\Models\Transaksi\Peserta;
+use App\Models\Transaksi\BiayaPeserta;
 
 class BiayaPesertaController extends Controller
 {
@@ -25,5 +26,22 @@ class BiayaPesertaController extends Controller
 
         return redirect()->route('perjalanan.show', $peserta->perjalanan_id)
             ->with('success', 'Rincian anggaran biaya berhasil ditambahkan!');
+    }
+
+    /**
+     * Menghapus alokasi anggaran komponen biaya peserta
+     */
+    public function destroy($id)
+    {
+        // 1. Cari data rincian biaya berdasarkan ID
+        $biaya = BiayaPeserta::findOrFail($id);
+        
+        // 2. Eksekusi hapus data
+        $biaya->delete();
+
+        // 3. Kembalikan ke halaman sebelumnya (redirect back)
+        // Inertia akan secara otomatis mempertahankan posisi scroll (preserveScroll)
+        return redirect()->back()
+            ->with('success', 'Rincian anggaran biaya berhasil dihapus!');
     }
 }

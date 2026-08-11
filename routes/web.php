@@ -102,7 +102,9 @@ Route::middleware('auth')->group(function () {
     // Manajemen Peserta di dalam Perjalanan
     Route::post('perjalanan/{perjalanan}/peserta', [PesertaController::class, 'store'])->name('perjalanan.peserta.store');
     Route::delete('perjalanan/{perjalanan}/peserta/{peserta}', [PesertaController::class, 'destroy'])->name('perjalanan.peserta.destroy');
+    
 
     // 5. Rute Biaya
     Route::post('peserta/{peserta}/biaya', [BiayaPesertaController::class, 'store'])->name('peserta.biaya.store');
+    Route::delete('/peserta/biaya/{biaya}', [BiayaPesertaController::class, 'destroy'])->name('peserta.biaya.destroy');
 });
