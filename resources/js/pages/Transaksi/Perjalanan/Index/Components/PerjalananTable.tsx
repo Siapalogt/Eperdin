@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 
-
 export interface Perjalanan {
     id: number;
     nomor: string;
@@ -12,6 +11,7 @@ export interface Perjalanan {
     tanggal_pulang: string;
     lama_hari: number;
     status: string;
+    peserta_count?: number; 
 }
 
 interface PerjalananTableProps {
@@ -80,6 +80,7 @@ export const PerjalananTable: React.FC<PerjalananTableProps> = ({
                             <th className="px-6 py-4 text-left">Nama Kegiatan & Tujuan</th>
                             <th className="px-6 py-4 text-left">Tanggal Pelaksanaan</th>
                             <th className="px-6 py-4 text-left">Lama Perjalanan</th>
+                            <th className="px-6 py-4 text-center">Peserta</th> 
                             <th className="px-6 py-4 text-left">Status</th>
                             <th className="px-6 py-4 text-center">Aksi</th>
                         </tr>
@@ -87,7 +88,7 @@ export const PerjalananTable: React.FC<PerjalananTableProps> = ({
                     <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
                         {filteredPerjalanan.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="px-6 py-12 text-center italic text-slate-400">
+                                <td colSpan={7} className="px-6 py-12 text-center italic text-slate-400">
                                     Belum ada data usulan perjalanan dinas yang tercatat.
                                 </td>
                             </tr>
@@ -116,6 +117,13 @@ export const PerjalananTable: React.FC<PerjalananTableProps> = ({
                                     <td className="px-6 py-4 font-bold text-slate-700">
                                         {row.lama_hari} Hari
                                     </td>
+                                   
+                                    <td className="px-6 py-4 text-center">
+                                        <span className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 text-[10px] font-extrabold text-slate-600">
+                                            {row.peserta_count || 0} Orang
+                                        </span>
+                                    </td>
+
                                     <td className="px-6 py-4">
                                         <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-extrabold ${getStatusStyle(row.status)}`}>
                                             {row.status}
@@ -124,7 +132,7 @@ export const PerjalananTable: React.FC<PerjalananTableProps> = ({
                                     <td className="space-x-3 px-6 py-4 text-center">
                                         <Link
                                             href={route('perjalanan.show', row.id)}
-                                            className="font-bold text-indigo-600 hover:text-indigo-900 hover:underline"
+                                            className="font-bold text-indigo-600 hover:text-indigo-900 hover:underline transition"
                                         >
                                             Detail
                                         </Link>

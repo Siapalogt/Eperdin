@@ -22,6 +22,7 @@ class PerjalananController extends Controller
     public function index()
     {
         $perjalanan = Perjalanan::with(['peserta.detail_peserta'])
+            ->withCount('peserta') 
             ->orderBy('created_at', 'desc')
             ->get();
 
