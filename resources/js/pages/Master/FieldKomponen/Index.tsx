@@ -63,6 +63,8 @@ export default function Index({
                     <FieldKomponenTable
                         fieldKomponen={fieldKomponen}
                         activeEditId={selectedFieldKomponen?.id || null}
+                        kelompokBiaya={kelompokBiaya} 
+                        komponenBiaya={komponenBiaya}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                     />
