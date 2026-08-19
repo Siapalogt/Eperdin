@@ -29,6 +29,12 @@ export default function TableBiayaPeserta({
         return { label: 'Peserta', style: 'bg-slate-50 text-slate-700 border-slate-200' };
     };
 
+    // 💡 Kalkulasi Total Keseluruhan Biaya dari Seluruh Peserta
+    const totalKeseluruhanPeserta = pesertaList.reduce((acc, row) => {
+        const biayaPeserta = row.biaya?.reduce((subAcc: number, cur: any) => subAcc + Number(cur.total || 0), 0) || 0;
+        return acc + biayaPeserta;
+    }, 0);
+
     return (
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col overflow-hidden">
             <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
@@ -95,6 +101,21 @@ export default function TableBiayaPeserta({
                             })
                         )}
                     </tbody>
+
+                    {/* 💡 FOOTER TOTAL BIAYA PESERTA */}
+                    {pesertaList.length > 0 && (
+                        <tfoot className="bg-slate-800 text-white">
+                            <tr>
+                                <td colSpan={2} className="px-6 py-3.5 text-right font-black text-xs uppercase tracking-widest">
+                                    Total Biaya Peserta:
+                                </td>
+                                <td className="px-6 py-3.5 text-right font-black text-sm text-emerald-400">
+                                    {formatRp(totalKeseluruhanPeserta)}
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    )}
                 </table>
             </div>
         </div>
