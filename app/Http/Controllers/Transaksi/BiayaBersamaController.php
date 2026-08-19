@@ -26,6 +26,18 @@ class BiayaBersamaController extends Controller
     }
 
     /**
+     * Memperbarui rincian anggaran biaya bersama
+     */
+    public function update(StoreBiayaBersamaRequest $request, $id)
+    {
+        $biaya = BiayaBersama::findOrFail($id);
+        $biaya->update($request->validated());
+
+        return redirect()->back()
+            ->with('success', 'Rincian biaya bersama berhasil diperbarui!');
+    }
+
+    /**
      * Menghapus alokasi anggaran biaya bersama
      */
     public function destroy($id)

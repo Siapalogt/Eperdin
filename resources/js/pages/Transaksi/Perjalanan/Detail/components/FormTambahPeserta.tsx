@@ -3,32 +3,63 @@ import { useForm } from '@inertiajs/react';
 
 interface Props {
     perjalananId: number;
+    pesertaTerdaftar?: any[]; // 👈 1. Terima data peserta yang sudah ada di manifes
     masterAsn: any[];
     masterDewan: any[];
     masterPjlp: any[];
     masterTa: any[];
 }
 
-export default function FormTambahPeserta({ perjalananId, masterAsn, masterDewan, masterPjlp, masterTa }: Props) {
+export default function FormTambahPeserta({ 
+    perjalananId, 
+    pesertaTerdaftar = [], // 👈 Berikan nilai default array kosong
+    masterAsn, 
+    masterDewan, 
+    masterPjlp, 
+    masterTa 
+}: Props) {
     const [pilihanNama, setPilihanNama] = useState<any[]>([]);
-    const { data, setData, post, processing, reset } = useForm({
+    
+    const { data, setData, post, processing, reset, errors } = useForm({
         jenis_peserta: 'Asn',
         peserta_id: '',
         uang_harian_kustom: 0,
     });
 
+    // 💡 Helper untuk mengecek apakah orang tersebut sudah masuk ke manifes
+    const isAlreadyAdded = (id: number | string, tipe: string) => {
+        return pesertaTerdaftar.some((p: any) => {
+            const pId = p.detail_peserta_id || p.peserta_id || p.detail_peserta?.id;
+            const pTipe = (p.jenis_peserta || '').toLowerCase();
+
+            let tipeMatch = false;
+            if (tipe === 'Asn' && pTipe.includes('asn')) tipeMatch = true;
+            else if (tipe === 'Dewan' && (pTipe.includes('dewan') || pTipe.includes('anggotadewan'))) tipeMatch = true;
+            else if (tipe === 'Pjlp' && pTipe.includes('pjlp')) tipeMatch = true;
+            else if (tipe === 'Ta' && (pTipe.includes('ta') || pTipe.includes('tenagaahli'))) tipeMatch = true;
+
+            return String(pId) === String(id) && tipeMatch;
+        });
+    };
+
     useEffect(() => {
         setData('peserta_id', '');
-        if (data.jenis_peserta === 'Asn') setPilihanNama(masterAsn || []);
-        else if (data.jenis_peserta === 'Dewan') setPilihanNama(masterDewan || []);
-        else if (data.jenis_peserta === 'Pjlp') setPilihanNama(masterPjlp || []);
-        else if (data.jenis_peserta === 'Ta') setPilihanNama(masterTa || []);
-        else setPilihanNama([]);
-    }, [data.jenis_peserta]);
+        let rawList: any[] = [];
+        
+        if (data.jenis_peserta === 'Asn') rawList = masterAsn || [];
+        else if (data.jenis_peserta === 'Dewan') rawList = masterDewan || [];
+        else if (data.jenis_peserta === 'Pjlp') rawList = masterPjlp || [];
+        else if (data.jenis_peserta === 'Ta') rawList = masterTa || [];
+
+        // 💡 2. FILTER: Hanya ambil nama yang BELUM terdaftar di manifes
+        const availableList = rawList.filter((item) => !isAlreadyAdded(item.id, data.jenis_peserta));
+        setPilihanNama(availableList);
+    }, [data.jenis_peserta, pesertaTerdaftar, masterAsn, masterDewan, masterPjlp, masterTa]);
 
     const handleTambahPeserta = (e: React.FormEvent) => {
         e.preventDefault();
         post(`/perjalanan/${perjalananId}/peserta`, { 
+            preserveScroll: true,
             onSuccess: () => reset('peserta_id', 'uang_harian_kustom') 
         });
     };
@@ -40,7 +71,9 @@ export default function FormTambahPeserta({ perjalananId, masterAsn, masterDewan
 
             <form onSubmit={handleTambahPeserta} className="space-y-4">
                 <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Tipe Personel <span className="text-rose-500">*</span></label>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Tipe Personel <span className="text-rose-500">*</span>
+                    </label>
                     <div className="grid grid-cols-4 gap-2">
                         {['Asn', 'Dewan', 'Pjlp', 'Ta'].map((type) => (
                             <button
@@ -60,24 +93,38 @@ export default function FormTambahPeserta({ perjalananId, masterAsn, masterDewan
                 </div>
 
                 <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Pilih Personel <span className="text-rose-500">*</span></label>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Pilih Personel <span className="text-rose-500">*</span>
+                    </label>
                     <select 
                         required 
-                        disabled={!pilihanNama || pilihanNama.length === 0} 
-                        className="w-full border border-slate-200 p-2.5 text-xs rounded-xl bg-white focus:outline-none focus:border-blue-600 transition" 
+                        disabled={pilihanNama.length === 0} 
+                        className={`w-full border p-2.5 text-xs rounded-xl bg-white focus:outline-none transition ${
+                            errors.peserta_id 
+                                ? 'border-rose-300 focus:border-rose-600' 
+                                : 'border-slate-200 focus:border-blue-600'
+                        } disabled:bg-slate-100 disabled:text-slate-400`} 
                         value={data.peserta_id} 
                         onChange={e => setData('peserta_id', e.target.value)}
                     >
-                        <option value="">-- Pilih Nama --</option>
-                        {pilihanNama?.map((item) => (
-                            <option key={item.id} value={item.id}>{item.nama}</option>
+                        <option value="">
+                            {pilihanNama.length === 0 ? '-- Semua Personel Sudah Terdaftar --' : '-- Pilih Nama --'}
+                        </option>
+                        {pilihanNama.map((item) => (
+                            <option key={item.id} value={item.id}>
+                                {item.nama} {item.jabatan ? `— (${item.jabatan})` : ''}
+                            </option>
                         ))}
                     </select>
+
+                    {errors.peserta_id && (
+                        <p className="text-[10px] text-rose-500 mt-1 font-semibold">{errors.peserta_id}</p>
+                    )}
                 </div>
 
                 <button 
                     type="submit" 
-                    disabled={processing || !data.peserta_id} 
+                    disabled={processing || !data.peserta_id || pilihanNama.length === 0} 
                     className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition disabled:opacity-50"
                 >
                     {processing ? 'Memproses...' : 'Tambahkan Peserta'}

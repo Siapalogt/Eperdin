@@ -29,6 +29,19 @@ class BiayaPesertaController extends Controller
     }
 
     /**
+     * Memperbarui rincian anggaran biaya peserta
+     */
+
+    public function update(StoreBiayaPesertaRequest $request, $id)
+    {
+        $biaya = BiayaPeserta::findOrFail($id);
+        $biaya->update($request->validated());
+
+        return redirect()->back()
+            ->with('success', 'Rincian anggaran peserta berhasil diperbarui!');
+    }
+
+    /**
      * Menghapus alokasi anggaran komponen biaya peserta
      */
     public function destroy($id)

@@ -111,6 +111,8 @@ Route::middleware('auth')->group(function () {
     // 5. Rute Biaya
     Route::post('peserta/{peserta}/biaya', [BiayaPesertaController::class, 'store'])->name('peserta.biaya.store');
     Route::delete('/peserta/biaya/{biaya}', [BiayaPesertaController::class, 'destroy'])->name('peserta.biaya.destroy');
+    Route::put('peserta/biaya/{biaya}', [BiayaPesertaController::class, 'update'])->name('peserta.biaya.update');
     Route::post('perjalanan/{perjalanan}/biaya-bersama', [BiayaBersamaController::class, 'store'])->name('perjalanan.biaya-bersama.store');
+    Route::put('perjalanan/biaya-bersama/{id}', [BiayaBersamaController::class, 'update'])->name('perjalanan.biaya-bersama.update');
     Route::delete('perjalanan/biaya-bersama/{id}', [BiayaBersamaController::class, 'destroy'])->name('perjalanan.biaya-bersama.destroy');
 });

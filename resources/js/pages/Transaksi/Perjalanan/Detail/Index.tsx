@@ -33,8 +33,9 @@ const Index: React.FC<Props> = ({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activePesertaId, setActivePesertaId] = useState<any>(null);
 
-    // State Modal Biaya Bersama
+    // 💡 State Modal Biaya Bersama (Tambah & Edit)
     const [isBiayaBersamaModalOpen, setIsBiayaBersamaModalOpen] = useState(false);
+    const [editingBiayaBersama, setEditingBiayaBersama] = useState<any | null>(null);
 
     // Guard Clause untuk Data Perjalanan Null
     if (!perjalanan) {
@@ -51,12 +52,29 @@ const Index: React.FC<Props> = ({
         );
     }
 
+    // Handler Biaya Peserta
     const openBiayaModal = (peserta: any) => {
         setActivePesertaId(peserta.id);
         setIsModalOpen(true);
     };
 
     const activePeserta = perjalanan?.peserta?.find((p: any) => p.id === activePesertaId) || null;
+
+    // 💡 Handler Biaya Bersama (Buka Modal Tambah vs Buka Modal Edit)
+    const handleOpenTambahBiayaBersama = () => {
+        setEditingBiayaBersama(null); // Mode input baru (form kosong)
+        setIsBiayaBersamaModalOpen(true);
+    };
+
+    const handleOpenEditBiayaBersama = (item: any) => {
+        setEditingBiayaBersama(item); // Mode edit (form terisi data item terpilih)
+        setIsBiayaBersamaModalOpen(true);
+    };
+
+    const handleCloseBiayaBersamaModal = () => {
+        setIsBiayaBersamaModalOpen(false);
+        setEditingBiayaBersama(null);
+    };
 
     const formatRp = (angka: number) => 
         new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka || 0);
@@ -89,8 +107,9 @@ const Index: React.FC<Props> = ({
                     perjalananId={perjalanan.id} 
                     pesertaList={perjalanan?.peserta || []} 
                     biayaBersamaList={perjalanan?.biaya_bersama || []}
-                    onOpenBiayaBersamaModal={() => setIsBiayaBersamaModalOpen(true)}
                     onOpenBiayaModal={openBiayaModal}
+                    onOpenBiayaBersamaModal={handleOpenTambahBiayaBersama}
+                    onEditBiayaBersama={handleOpenEditBiayaBersama} 
                     formatRp={formatRp} 
                 />
 
@@ -103,6 +122,7 @@ const Index: React.FC<Props> = ({
                     
                     <FormTambahPeserta 
                         perjalananId={perjalanan.id} 
+                        pesertaTerdaftar={perjalanan?.peserta || []}
                         masterAsn={masterAsn} 
                         masterDewan={masterDewan} 
                         masterPjlp={masterPjlp} 
@@ -122,11 +142,12 @@ const Index: React.FC<Props> = ({
                 formatRp={formatRp} 
             />
 
-            {/* 💡 5. Modal Input Rincian Biaya Bersama (Tambahkan ini) */}
+            {/* 5. Modal Input / Edit Biaya Bersama */}
             <ModalBiayaBersama 
                 isOpen={isBiayaBersamaModalOpen}
-                onClose={() => setIsBiayaBersamaModalOpen(false)}
-                perjalanan={perjalanan}
+                onClose={handleCloseBiayaBersamaModal}
+                perjalananId={perjalanan.id}
+                editingData={editingBiayaBersama}
                 listKomponen={listKomponen}
                 kelompokBiaya={kelompokBiaya}
                 listSatuan={listSatuan}

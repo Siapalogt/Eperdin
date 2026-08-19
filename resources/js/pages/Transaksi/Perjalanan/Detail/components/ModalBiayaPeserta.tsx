@@ -7,7 +7,7 @@ interface Props {
     activePeserta: any;
     listKomponen: any[];
     kelompokBiaya?: any[];
-    listSatuan?: any[]; 
+    listSatuan?: any[];
     formatRp: (angka: number) => string;
 }
 
@@ -17,16 +17,17 @@ export default function ModalBiayaPeserta({
     activePeserta, 
     listKomponen = [], 
     kelompokBiaya = [],
-    listSatuan = [], // 👈 2. Tangkap prop listSatuan
+    listSatuan = [],
     formatRp 
 }: Props) {
     const [selectedKelompokId, setSelectedKelompokId] = useState<string | number>('');
     const [dynamicFields, setDynamicFields] = useState<any[]>([]);
+    const [editingId, setEditingId] = useState<number | null>(null);
 
-    const { data, setData, post, processing, reset, clearErrors } = useForm({
+    const { data, setData, post, put, processing, reset, clearErrors } = useForm({
         komponen_biaya_id: '',
         qty: 1,
-        satuan: '', // 👈 3. Ubah default 'unit' menjadi string kosong agar user wajib memilih
+        satuan: '',
         harga_satuan: 0,
         total: 0,
         keterangan: '',
@@ -84,27 +85,64 @@ export default function ModalBiayaPeserta({
         setData('harga_satuan', rawValue ? Number(rawValue) : 0);
     };
 
-    const handleTambahBiaya = (e: React.FormEvent) => {
-        e.preventDefault();
-        post(`/peserta/${activePeserta.id}/biaya`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                reset(); 
-                setSelectedKelompokId('');
-                setDynamicFields([]);
-            }
+    const handleEditBiaya = (item: any) => {
+        setEditingId(item.id);
+        
+        // Cari kelompok id terkait
+        const komponen = listKomponen.find(k => String(k.id) === String(item.komponen_biaya_id));
+        const kelompokId = komponen?.kelompok_biaya_id || komponen?.kelompok_biaya?.id || '';
+        setSelectedKelompokId(kelompokId);
+
+        // Ambil dynamic fields komponen tersebut
+        const fields = komponen?.field_komponen || komponen?.fieldKomponen || [];
+        setDynamicFields(fields);
+
+        // Set Form Values
+        setData({
+            komponen_biaya_id: String(item.komponen_biaya_id),
+            qty: item.qty ?? item.jumlah ?? 1,
+            satuan: item.satuan || '',
+            harga_satuan: Number(item.harga_satuan) || 0,
+            total: Number(item.total) || 0,
+            keterangan: item.keterangan || '',
+            detail_json: item.detail_json || {}
         });
+    };
+
+    const handleCancelEdit = () => {
+        setEditingId(null);
+        reset();
+        setSelectedKelompokId('');
+        setDynamicFields([]);
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (editingId) {
+            put(`/peserta/biaya/${editingId}`, {
+                preserveScroll: true,
+                onSuccess: () => handleCancelEdit()
+            });
+        } else {
+            post(`/peserta/${activePeserta.id}/biaya`, {
+                preserveScroll: true,
+                onSuccess: () => handleCancelEdit()
+            });
+        }
     };
 
     const handleDeleteBiaya = (biayaId: number) => {
         if(confirm('Hapus rincian biaya ini?')) {
             router.delete(`/peserta/biaya/${biayaId}`, {
                 preserveScroll: true,
+                onSuccess: () => {
+                    if (editingId === biayaId) handleCancelEdit();
+                }
             });
         }
     };
 
-    // Fungsi Pembantu UX: Merapikan label snake_case menjadi Capital Case
     const formatLabel = (str: string) => {
         if (!str) return '';
         return str.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
@@ -112,7 +150,7 @@ export default function ModalBiayaPeserta({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
                 
                 {/* MODAL HEADER */}
                 <div className="p-5 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
@@ -125,7 +163,7 @@ export default function ModalBiayaPeserta({
                         </p>
                     </div>
                     <button 
-                        onClick={onClose} 
+                        onClick={() => { handleCancelEdit(); onClose(); }} 
                         className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 text-slate-600 hover:bg-rose-500 hover:text-white transition font-bold"
                     >
                         &times;
@@ -133,13 +171,26 @@ export default function ModalBiayaPeserta({
                 </div>
 
                 {/* MODAL BODY */}
-                <div className="p-6 overflow-y-auto grid grid-cols-1 lg:grid-cols-3 gap-8 flex-grow">
+                <div className="p-6 overflow-y-auto grid grid-cols-1 lg:grid-cols-12 gap-8 flex-grow">
                     
-                    {/* KIRI: FORM TAMBAH ITEM */}
-                    <div className="lg:col-span-1 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm h-fit">
-                        <h4 className="font-bold text-sm text-slate-800 border-b border-slate-100 pb-3 mb-4">Tambah Item Biaya</h4>
+                    {/* KIRI: FORM TAMBAH / EDIT ITEM (5 Kolom) */}
+                    <div className="lg:col-span-5 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm h-fit">
+                        <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                            <h4 className="font-bold text-sm text-slate-800">
+                                {editingId ? '✏️ Edit Item Biaya' : '+ Tambah Item Biaya'}
+                            </h4>
+                            {editingId && (
+                                <button 
+                                    type="button" 
+                                    onClick={handleCancelEdit}
+                                    className="text-xs text-rose-600 hover:underline font-bold"
+                                >
+                                    Batal Edit
+                                </button>
+                            )}
+                        </div>
                         
-                        <form onSubmit={handleTambahBiaya} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 mb-1.5">Kelompok Biaya <span className="text-rose-500">*</span></label>
                                 <select 
@@ -175,7 +226,7 @@ export default function ModalBiayaPeserta({
 
                             <div className="grid grid-cols-3 gap-3">
                                 <div className="col-span-1">
-                                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Qty</label>
+                                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Qty / Vol</label>
                                     <input 
                                         type="number" min="1" 
                                         className="w-full border border-slate-300 px-3 py-2.5 text-xs rounded-xl focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 font-medium text-slate-800" 
@@ -194,15 +245,12 @@ export default function ModalBiayaPeserta({
                                 </div>
                             </div>
 
-                            {/* 👈 4. Ubah Input Text menjadi Select / Dropdown */}
                             <div>
-                                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                                    Satuan <span className="text-rose-500">*</span>
-                                </label>
+                                <label className="block text-xs font-bold text-slate-700 mb-1.5">Satuan <span className="text-rose-500">*</span></label>
                                 <select 
                                     className="w-full border border-slate-300 px-3 py-2.5 text-xs rounded-xl focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 font-medium text-slate-800 bg-slate-50/50 cursor-pointer" 
                                     value={data.satuan} 
-                                    onChange={(e) => setData('satuan', e.target.value)}
+                                    onChange={(e) => setData('satuan', e.target.value)} 
                                     required
                                 >
                                     <option value="" disabled>-- Pilih Satuan --</option>
@@ -223,7 +271,7 @@ export default function ModalBiayaPeserta({
                                 />
                             </div>
 
-                            {/* Render Dynamic Fields */}
+                            {/* Dynamic Fields */}
                             {dynamicFields.length > 0 && (
                                 <div className="bg-indigo-50/60 border border-indigo-100 p-4 rounded-xl space-y-3 mt-4">
                                     <h5 className="text-[10px] font-black text-indigo-700 uppercase tracking-wider border-b border-indigo-200/50 pb-2 mb-2">Input Rincian Lanjutan</h5>
@@ -265,7 +313,7 @@ export default function ModalBiayaPeserta({
                                 </div>
                             )}
 
-                            <div className="pt-4 border-t border-slate-100 mt-4 space-y-4">
+                            <div className="pt-4 border-t border-slate-100 mt-4 space-y-3">
                                 <div className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
                                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Kalkulasi:</span>
                                     <span className="text-sm font-black text-indigo-700">{formatRp(data.total)}</span>
@@ -273,56 +321,86 @@ export default function ModalBiayaPeserta({
                                 <button 
                                     type="submit" 
                                     disabled={processing || !data.komponen_biaya_id || data.total === 0} 
-                                    className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition disabled:opacity-50"
+                                    className={`w-full py-2.5 text-white font-bold text-xs rounded-xl shadow-md transition disabled:opacity-50 ${
+                                        editingId ? 'bg-amber-600 hover:bg-amber-700' : 'bg-indigo-600 hover:bg-indigo-700'
+                                    }`}
                                 >
-                                    {processing ? 'Menyimpan Data...' : 'Simpan Rincian'}
+                                    {processing ? 'Menyimpan Data...' : editingId ? 'Simpan Perubahan' : 'Simpan Rincian'}
                                 </button>
                             </div>
                         </form>
                     </div>
 
-                    {/* KANAN: TABEL HASIL USULAN */}
-                    <div className="lg:col-span-2 space-y-4">
+                    {/* KANAN: TABEL RINCIAN DENGAN DETAIL LENGKAP (7 Kolom) */}
+                    <div className="lg:col-span-7 space-y-4">
                         <h4 className="font-bold text-sm text-slate-800">Daftar Anggaran yang Diusulkan</h4>
                         
                         <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
                             <table className="min-w-full divide-y divide-slate-200 text-xs">
                                 <thead className="bg-slate-50">
                                     <tr>
-                                        <th className="px-5 py-3.5 text-left font-bold text-slate-500 uppercase tracking-wider">Item Komponen</th>
-                                        <th className="px-5 py-3.5 text-center font-bold text-slate-500 uppercase tracking-wider">Vol</th>
-                                        <th className="px-5 py-3.5 text-right font-bold text-slate-500 uppercase tracking-wider">Tarif (Rp)</th>
-                                        <th className="px-5 py-3.5 text-right font-bold text-slate-500 uppercase tracking-wider">Total (Rp)</th>
-                                        <th className="px-5 py-3.5 w-10 text-center font-bold text-slate-500 uppercase tracking-wider">Aksi</th> 
+                                        <th className="px-4 py-3.5 text-left font-bold text-slate-500 uppercase tracking-wider">Rincian Komponen</th>
+                                        <th className="px-3 py-3.5 text-center font-bold text-slate-500 uppercase tracking-wider">Vol</th>
+                                        <th className="px-3 py-3.5 text-right font-bold text-slate-500 uppercase tracking-wider">Tarif (Rp)</th>
+                                        <th className="px-4 py-3.5 text-right font-bold text-slate-500 uppercase tracking-wider">Total (Rp)</th>
+                                        <th className="px-3 py-3.5 w-20 text-center font-bold text-slate-500 uppercase tracking-wider">Aksi</th> 
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 bg-white">
                                     {activePeserta.biaya && activePeserta.biaya.length > 0 ? (
                                         activePeserta.biaya.map((b: any) => (
-                                            <tr key={b.id} className="hover:bg-slate-50/80 transition group">
-                                                <td className="px-5 py-3">
+                                            <tr key={b.id} className={`transition group ${editingId === b.id ? 'bg-amber-50/60' : 'hover:bg-slate-50/80'}`}>
+                                                <td className="px-4 py-3">
                                                     <div className="font-bold text-slate-800 text-sm">{b.komponen_biaya?.nama}</div>
-                                                    {b.keterangan && <div className="text-[10px] text-slate-400 mt-0.5 font-medium">{b.keterangan}</div>}
+                                                    {b.keterangan && (
+                                                        <div className="text-[10px] text-slate-500 mt-0.5 italic">{b.keterangan}</div>
+                                                    )}
+                                                    
+                                                    {/* 💡 Menampilkan detail_json dalam bentuk Tags/Badge */}
+                                                    {b.detail_json && typeof b.detail_json === 'object' && Object.keys(b.detail_json).length > 0 && (
+                                                        <div className="flex flex-wrap gap-1 mt-1.5">
+                                                            {Object.entries(b.detail_json).map(([key, val]) => (
+                                                                val ? (
+                                                                    <span key={key} className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                                                        <strong className="mr-1">{formatLabel(key)}:</strong> {String(val)}
+                                                                    </span>
+                                                                ) : null
+                                                            ))}
+                                                        </div>
+                                                    )}
                                                 </td>
-                                                <td className="px-5 py-3 text-center text-slate-600 font-semibold">
+                                                <td className="px-3 py-3 text-center text-slate-600 font-semibold whitespace-nowrap">
                                                     {b.qty ?? b.jumlah} {b.satuan || ''}
                                                 </td>
-                                                <td className="px-5 py-3 text-right text-slate-600 font-medium">
+                                                <td className="px-3 py-3 text-right text-slate-600 font-medium whitespace-nowrap">
                                                     {formatRp(b.harga_satuan)}
                                                 </td>
-                                                <td className="px-5 py-3 text-right font-black text-indigo-700">
+                                                <td className="px-4 py-3 text-right font-black text-indigo-700 whitespace-nowrap">
                                                     {formatRp(b.total)}
                                                 </td>
-                                                <td className="px-5 py-3 text-center">
-                                                    <button 
-                                                        onClick={() => handleDeleteBiaya(b.id)}
-                                                        className="text-slate-400 bg-slate-100 hover:text-rose-600 hover:bg-rose-100 transition p-1.5 rounded-lg inline-flex items-center justify-center"
-                                                        title="Hapus rincian ini"
-                                                    >
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
-                                                    </button>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    <div className="flex items-center justify-center space-x-1.5">
+                                                        {/* Tombol Edit */}
+                                                        <button 
+                                                            onClick={() => handleEditBiaya(b)}
+                                                            className="text-slate-400 bg-slate-100 hover:text-amber-600 hover:bg-amber-100 transition p-1.5 rounded-lg inline-flex items-center justify-center"
+                                                            title="Edit rincian ini"
+                                                        >
+                                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                            </svg>
+                                                        </button>
+                                                        {/* Tombol Hapus */}
+                                                        <button 
+                                                            onClick={() => handleDeleteBiaya(b.id)}
+                                                            className="text-slate-400 bg-slate-100 hover:text-rose-600 hover:bg-rose-100 transition p-1.5 rounded-lg inline-flex items-center justify-center"
+                                                            title="Hapus rincian ini"
+                                                        >
+                                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))
@@ -337,10 +415,10 @@ export default function ModalBiayaPeserta({
                                 {activePeserta.biaya && activePeserta.biaya.length > 0 && (
                                     <tfoot className="bg-slate-800 text-white">
                                         <tr>
-                                            <td colSpan={3} className="px-5 py-3.5 text-right font-black text-xs uppercase tracking-widest">
+                                            <td colSpan={3} className="px-4 py-3.5 text-right font-black text-xs uppercase tracking-widest">
                                                 Total Keseluruhan:
                                             </td>
-                                            <td colSpan={2} className="px-5 py-3.5 text-right font-black text-sm text-emerald-400">
+                                            <td colSpan={2} className="px-4 py-3.5 text-right font-black text-sm text-emerald-400">
                                                 {formatRp(activePeserta.biaya.reduce((acc: number, cur: any) => acc + Number(cur.total), 0))}
                                             </td>
                                         </tr>

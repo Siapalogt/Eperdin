@@ -8,6 +8,7 @@ interface Props {
     biayaBersamaList?: any[];
     onOpenBiayaModal: (peserta: any) => void;
     onOpenBiayaBersamaModal?: () => void;
+    onEditBiayaBersama?: (item: any) => void; // 👈 Tambahkan prop ini
     formatRp: (angka: number) => string;
 }
 
@@ -17,13 +18,13 @@ export default function PesertaManifestTable({
     biayaBersamaList = [],
     onOpenBiayaModal,
     onOpenBiayaBersamaModal,
+    onEditBiayaBersama,
     formatRp,
 }: Props) {
     const [activeTab, setActiveTab] = useState<'peserta' | 'bersama'>('peserta');
 
     return (
         <div className="lg:col-span-2 flex flex-col gap-4">
-            {/* Navigasi Tab */}
             <div className="flex items-center space-x-3">
                 <button
                     onClick={() => setActiveTab('peserta')}
@@ -47,7 +48,6 @@ export default function PesertaManifestTable({
                 </button>
             </div>
 
-            {/* Konten Tab */}
             {activeTab === 'peserta' ? (
                 <TableBiayaPeserta
                     perjalananId={perjalananId}
@@ -60,6 +60,7 @@ export default function PesertaManifestTable({
                     perjalananId={perjalananId}
                     biayaBersamaList={biayaBersamaList}
                     onOpenBiayaBersamaModal={onOpenBiayaBersamaModal}
+                    onEditBiayaBersama={onEditBiayaBersama} 
                     formatRp={formatRp}
                 />
             )}
