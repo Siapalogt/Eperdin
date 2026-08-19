@@ -67,6 +67,7 @@ class PerjalananController extends Controller
         $perjalanan->load([
             'peserta.detail_peserta',
             'peserta.biaya.komponen_biaya',
+            'biaya_bersama.komponen_biaya',
         ]);
 
         $kelompokBiaya = KelompokBiaya::where('status', 'aktif')->orderBy('nama', 'asc')->get();

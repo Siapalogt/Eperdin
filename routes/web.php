@@ -24,6 +24,7 @@ use App\Http\Controllers\Master\SatuanController;
 use App\Http\Controllers\Transaksi\PerjalananController;
 use App\Http\Controllers\Transaksi\PesertaController;
 use App\Http\Controllers\Transaksi\BiayaPesertaController;
+use App\Http\Controllers\Transaksi\BiayaBersamaController;
 
 // ==========================================
 // IMPORT MODEL (Untuk Dashboard)
@@ -110,4 +111,6 @@ Route::middleware('auth')->group(function () {
     // 5. Rute Biaya
     Route::post('peserta/{peserta}/biaya', [BiayaPesertaController::class, 'store'])->name('peserta.biaya.store');
     Route::delete('/peserta/biaya/{biaya}', [BiayaPesertaController::class, 'destroy'])->name('peserta.biaya.destroy');
+    Route::post('perjalanan/{perjalanan}/biaya-bersama', [BiayaBersamaController::class, 'store'])->name('perjalanan.biaya-bersama.store');
+    Route::delete('perjalanan/biaya-bersama/{id}', [BiayaBersamaController::class, 'destroy'])->name('perjalanan.biaya-bersama.destroy');
 });

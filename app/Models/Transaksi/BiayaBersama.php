@@ -12,6 +12,12 @@ class BiayaBersama extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'detail_json'  => 'array',
+        'harga_satuan' => 'decimal:2',
+        'total'        => 'decimal:2',
+    ];
+
     // 1. Relasi balik ke Perjalanan induknya
     public function perjalanan(): BelongsTo
     {

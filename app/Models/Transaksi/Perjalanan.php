@@ -4,6 +4,7 @@ namespace App\Models\Transaksi;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Transaksi\BiayaBersama;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Perjalanan extends Model
@@ -26,7 +27,6 @@ class Perjalanan extends Model
         'created_by',  
     ];
 
-    // Relasi yang sudah kita buat sebelumnya jangan dibuang:
     public function peserta(): HasMany
     {
         return $this->hasMany(Peserta::class, 'perjalanan_id');

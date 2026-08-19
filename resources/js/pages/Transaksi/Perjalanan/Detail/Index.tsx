@@ -6,6 +6,7 @@ import StatusWorkflowCard from './components/StatusWorkflowCard';
 import FormTambahPeserta from './components/FormTambahPeserta';
 import PesertaManifestTable from './components/PesertaManifestTable';
 import ModalBiayaPeserta from './components/ModalBiayaPeserta';
+import ModalBiayaBersama from './components/ModalBiayaBersama';
 
 interface Props {
     perjalanan: any;
@@ -28,9 +29,12 @@ const Index: React.FC<Props> = ({
     kelompokBiaya,
     listSatuan
 }) => {
-    // State Modal Biaya
+    // State Modal Biaya Peserta
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activePesertaId, setActivePesertaId] = useState<any>(null);
+
+    // State Modal Biaya Bersama
+    const [isBiayaBersamaModalOpen, setIsBiayaBersamaModalOpen] = useState(false);
 
     // Guard Clause untuk Data Perjalanan Null
     if (!perjalanan) {
@@ -53,7 +57,6 @@ const Index: React.FC<Props> = ({
     };
 
     const activePeserta = perjalanan?.peserta?.find((p: any) => p.id === activePesertaId) || null;
-    
 
     const formatRp = (angka: number) => 
         new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka || 0);
@@ -81,10 +84,12 @@ const Index: React.FC<Props> = ({
             <DetailPerjalananCard perjalanan={perjalanan} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* 2. Tabel Manifes Peserta (Kiri - 2 Kolom) */}
+                {/* 2. Tabel Manifes Peserta & Biaya Bersama (Kiri - 2 Kolom) */}
                 <PesertaManifestTable 
                     perjalananId={perjalanan.id} 
-                    pesertaList={perjalanan?.peserta} 
+                    pesertaList={perjalanan?.peserta || []} 
+                    biayaBersamaList={perjalanan?.biaya_bersama || []}
+                    onOpenBiayaBersamaModal={() => setIsBiayaBersamaModalOpen(true)}
                     onOpenBiayaModal={openBiayaModal}
                     formatRp={formatRp} 
                 />
@@ -106,7 +111,7 @@ const Index: React.FC<Props> = ({
                 </div>
             </div>
 
-            {/* 4. Modal Input Rincian Biaya */}
+            {/* 4. Modal Input Rincian Biaya Peserta */}
             <ModalBiayaPeserta 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)} 
@@ -115,6 +120,17 @@ const Index: React.FC<Props> = ({
                 kelompokBiaya={kelompokBiaya} 
                 listSatuan={listSatuan}
                 formatRp={formatRp} 
+            />
+
+            {/* 💡 5. Modal Input Rincian Biaya Bersama (Tambahkan ini) */}
+            <ModalBiayaBersama 
+                isOpen={isBiayaBersamaModalOpen}
+                onClose={() => setIsBiayaBersamaModalOpen(false)}
+                perjalanan={perjalanan}
+                listKomponen={listKomponen}
+                kelompokBiaya={kelompokBiaya}
+                listSatuan={listSatuan}
+                formatRp={formatRp}
             />
         </AppLayout>
     );
